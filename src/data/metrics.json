@@ -1,0 +1,74 @@
+{
+  "_source": "DentalMind evaluation: medclip/docs/prediction/04_RESULTS.md (§4.2, §4.3, round 2) and medclip/TRAINING_RESULTS.md. Update this file when new results are measured; every number on the site comes from here.",
+  "measuredOn": "2026-09-30",
+  "highlights": [
+    { "group": "teeth", "row": "fdi-val", "label": { "en": "Tooth numbering (FDI), mAP50", "fa": "شماره‌گذاری دندان (FDI)، mAP50" } },
+    { "group": "need", "row": "root-canal", "label": { "en": "Root canal need vs sound tooth, AUROC", "fa": "نیاز به درمان ریشه در برابر دندان سالم، AUROC" } },
+    { "group": "need", "row": "any", "label": { "en": "Any decay-related need, AUROC", "fa": "هر نیاز درمانی مرتبط با پوسیدگی، AUROC" } },
+    { "group": "conditions", "row": "external", "label": { "en": "New clinic, condition detector mAP50 (domain shift)", "fa": "کلینیک جدید، mAP50 تشخیص وضعیت‌ها (تغییر دامنه)" } }
+  ],
+  "groups": [
+    {
+      "id": "teeth",
+      "title": { "en": "Tooth numbering (FDI)", "fa": "شماره‌گذاری دندان (FDI)" },
+      "model": "YOLO11m",
+      "data": { "en": "Tufts Dental Database + DENTEX enumeration labels", "fa": "پایگاه داده دندانی Tufts + برچسب‌های شماره‌گذاری DENTEX" },
+      "rows": [
+        { "id": "fdi-val", "label": { "en": "Validation mAP50", "fa": "mAP50 اعتبارسنجی" }, "value": 0.908, "kind": "score" },
+        { "id": "fdi-missed", "label": { "en": "Teeth whose FDI slot was missed (DENTEX test)", "fa": "دندان‌هایی که شماره FDI آن‌ها پیدا نشد (آزمون DENTEX)" }, "value": 2.0, "kind": "percent", "lowerIsBetter": true }
+      ]
+    },
+    {
+      "id": "disease",
+      "title": { "en": "Disease detector", "fa": "تشخیص‌دهنده بیماری" },
+      "model": "YOLO11m",
+      "data": { "en": "DENTEX test set, 250 panoramic X-rays", "fa": "مجموعه آزمون DENTEX، ۲۵۰ رادیوگرافی پانورامیک" },
+      "rows": [
+        { "id": "all", "label": { "en": "Box mAP50, 3 classes", "fa": "mAP50 کادر، ۳ کلاس" }, "value": 0.624, "kind": "score" },
+        { "id": "impacted", "label": { "en": "Impacted tooth", "fa": "دندان نهفته" }, "value": 0.934, "kind": "score" },
+        { "id": "caries", "label": { "en": "Caries", "fa": "پوسیدگی" }, "value": 0.497, "kind": "score" },
+        { "id": "periapical", "label": { "en": "Periapical lesion", "fa": "ضایعه اطراف ریشه" }, "value": 0.441, "kind": "score" }
+      ]
+    },
+    {
+      "id": "conditions",
+      "title": { "en": "Condition & treatment detector (14 classes)", "fa": "تشخیص‌دهنده وضعیت و درمان (۱۴ کلاس)" },
+      "model": "YOLO11m",
+      "data": { "en": "In-domain test (100 images) and an external clinic (180 images)", "fa": "آزمون درون‌دامنه (۱۰۰ تصویر) و یک کلینیک خارجی (۱۸۰ تصویر)" },
+      "rows": [
+        { "id": "in-domain", "label": { "en": "Box mAP50, in-domain test", "fa": "mAP50 کادر، آزمون درون‌دامنه" }, "value": 0.652, "kind": "score" },
+        { "id": "external", "label": { "en": "Box mAP50, external clinic", "fa": "mAP50 کادر، کلینیک خارجی" }, "value": 0.469, "kind": "score" },
+        { "id": "endo", "label": { "en": "Root canal treatment (in-domain)", "fa": "درمان ریشه (درون‌دامنه)" }, "value": 0.947, "kind": "score" },
+        { "id": "implant", "label": { "en": "Implant (in-domain)", "fa": "ایمپلنت (درون‌دامنه)" }, "value": 0.993, "kind": "score" },
+        { "id": "carious", "label": { "en": "Carious lesion (in-domain)", "fa": "ضایعه پوسیدگی (درون‌دامنه)" }, "value": 0.51, "kind": "score" },
+        { "id": "bone", "label": { "en": "Bone resorption (in-domain)", "fa": "تحلیل استخوان (درون‌دامنه)" }, "value": 0.2, "kind": "score", "weak": true }
+      ]
+    },
+    {
+      "id": "need",
+      "title": { "en": "Tooth-level treatment need (full pipeline)", "fa": "نیاز درمانی در سطح دندان (کل فرایند)" },
+      "model": { "en": "FDI + both detectors + per-tooth fusion", "fa": "FDI + هر دو تشخیص‌دهنده + ادغام در سطح دندان" },
+      "data": { "en": "DENTEX test, dentists’ per-tooth labels vs 90 sound teeth", "fa": "آزمون DENTEX، برچسب‌های دندانپزشکان برای هر دندان در برابر ۹۰ دندان سالم" },
+      "metric": "AUROC",
+      "rows": [
+        { "id": "filling", "label": { "en": "Filling needed (caries)", "fa": "نیاز به ترمیم (پوسیدگی)" }, "value": 0.81, "n": 733, "kind": "score" },
+        { "id": "root-canal", "label": { "en": "Root canal needed", "fa": "نیاز به درمان ریشه" }, "value": 0.89, "n": 157, "kind": "score" },
+        { "id": "periapical", "label": { "en": "Periapical lesion", "fa": "ضایعه اطراف ریشه" }, "value": 0.73, "n": 71, "kind": "score" },
+        { "id": "extraction", "label": { "en": "Extraction needed", "fa": "نیاز به کشیدن دندان" }, "value": 0.91, "n": 17, "kind": "score" },
+        { "id": "any", "label": { "en": "Any decay-related need", "fa": "هر نیاز مرتبط با پوسیدگی" }, "value": 0.82, "n": 978, "kind": "score" },
+        { "id": "curettage", "label": { "en": "Periodontal curettage needed", "fa": "نیاز به کورتاژ پریودنتال" }, "value": 0.5, "kind": "score", "weak": true }
+      ]
+    },
+    {
+      "id": "risk",
+      "title": { "en": "Patient risk without an X-ray", "fa": "خطر بیمار بدون رادیوگرافی" },
+      "model": { "en": "Gradient-boosted trees", "fa": "درخت‌های تقویت‌شده با گرادیان" },
+      "data": { "en": "NHANES (US national survey), held-out 20%", "fa": "NHANES (پیمایش ملی آمریکا)، ۲۰٪ داده کنارگذاشته" },
+      "metric": "AUROC",
+      "rows": [
+        { "id": "perio", "label": { "en": "Periodontitis (age ≥ 30), calibration error 0.022", "fa": "پریودنتیت (۳۰ سال و بالاتر)، خطای کالیبراسیون ۰٫۰۲۲" }, "value": 0.822, "n": 1587, "kind": "score" },
+        { "id": "caries", "label": { "en": "Untreated caries (age ≥ 18), calibration error 0.017", "fa": "پوسیدگی درمان‌نشده (۱۸ سال و بالاتر)، خطای کالیبراسیون ۰٫۰۱۷" }, "value": 0.807, "n": 2180, "kind": "score" }
+      ]
+    }
+  ]
+}

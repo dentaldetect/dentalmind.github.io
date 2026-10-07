@@ -1,0 +1,229 @@
+/* DentalMind brand: teal on deep navy, from the existing dentalmind-web palette. */
+:root {
+  --teal: #0ba99a;
+  --teal-600: #08897d;
+  --teal-50: #e7f7f5;
+  --navy: #071633;
+  --navy-2: #0d2547;
+  --bg: #f8fbfc;
+  --surface: #ffffff;
+  --surface-2: #eef5f7;
+  --ink: #071633;
+  --ink-2: #44526b;
+  --ink-3: #66748b;
+  --rule: #dce7ea;
+  --link: #08897d;
+  --amber: #b45309;
+  --amber-bg: #fff4e0;
+  --ok-bg: #e3f6ec;
+  --ok-ink: #11734a;
+  --gray-bg: #eef1f5;
+  --gray-ink: #4b5563;
+
+  --font: 'Inter Variable', Inter, system-ui, sans-serif;
+  --wrap: 1180px;
+  --gutter: 16px;
+  --r: 14px;
+  --r-lg: 22px;
+  --shadow: 0 10px 30px rgba(7, 22, 51, 0.07);
+  color-scheme: light;
+}
+:root[lang='fa'] {
+  --font: 'Vazirmatn Variable', Vazirmatn, Tahoma, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --bg: #07111f;
+    --surface: #0e1b2e;
+    --surface-2: #13233a;
+    --ink: #e8eef6;
+    --ink-2: #b5c1d1;
+    --ink-3: #8a97aa;
+    --rule: #22334b;
+    --link: #3fd1c1;
+    --teal-50: #0d2b2b;
+    --amber: #f5b45a;
+    --amber-bg: #3a2a10;
+    --ok-bg: #12301f;
+    --ok-ink: #8fe0b2;
+    --gray-bg: #1c2a3e;
+    --gray-ink: #c3cbd6;
+    --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+    color-scheme: dark;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: 1rem;
+  line-height: 1.65;
+  overflow-x: hidden;
+}
+:root[lang='fa'] body {
+  line-height: 1.9;
+}
+a {
+  color: var(--link);
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+h1,
+h2,
+h3 {
+  line-height: 1.2;
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+:root[lang='fa'] :is(h1, h2, h3) {
+  line-height: 1.5;
+  letter-spacing: 0;
+}
+:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 2px;
+}
+
+.wrap {
+  max-width: var(--wrap);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+.section {
+  padding-block: 72px;
+}
+.section-head {
+  max-width: 720px;
+  margin-block-end: 36px;
+}
+.section-head h2 {
+  font-size: clamp(1.7rem, 3.4vw, 2.4rem);
+}
+.section-head p {
+  color: var(--ink-2);
+  font-size: 1.1rem;
+  margin: 10px 0 0;
+}
+.eyebrow {
+  display: inline-block;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--teal-600);
+  margin-block-end: 10px;
+}
+:root[lang='fa'] .eyebrow {
+  letter-spacing: 0;
+  font-size: 0.9rem;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .eyebrow {
+    color: var(--teal);
+  }
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 46px;
+  padding: 0 22px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-family: inherit;
+  font-size: 0.98rem;
+  border: 1.5px solid transparent;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.btn:hover {
+  text-decoration: none;
+  transform: translateY(-1px);
+}
+.btn-primary {
+  background: var(--teal);
+  color: #fff;
+  box-shadow: 0 10px 26px rgba(11, 169, 154, 0.28);
+}
+.btn-ghost {
+  border-color: var(--rule);
+  color: var(--ink);
+  background: var(--surface);
+}
+.card {
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: var(--r);
+  padding: 24px;
+  box-shadow: var(--shadow);
+}
+.grid {
+  display: grid;
+  gap: 20px;
+}
+.grid-3 {
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+.grid-2 {
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+}
+.muted {
+  color: var(--ink-3);
+}
+.ltr {
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+.visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+.skip-link {
+  position: absolute;
+  inset-inline-start: 8px;
+  top: -50px;
+  background: var(--teal);
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 8px;
+  z-index: 100;
+}
+.skip-link:focus {
+  top: 8px;
+}
+table.data {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+table.data th,
+table.data td {
+  padding: 10px 12px;
+  border-block-end: 1px solid var(--rule);
+  text-align: start;
+}
+table.data th {
+  font-size: 0.82rem;
+  color: var(--ink-3);
+  font-weight: 700;
+}
+.table-scroll {
+  overflow-x: auto;
+}

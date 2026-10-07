@@ -1,0 +1,170 @@
+---
+// Schematic panoramic X-ray with AI findings drawn on top. Pure SVG: an illustration,
+// not patient data, so it can be published without any image licence.
+import type { Lang } from '../lib/i18n';
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const fa = lang === 'fa';
+
+// Image left = patient right, as on a real panoramic.
+const order = [8, 7, 6, 5, 4, 3, 2, 1, 1, 2, 3, 4, 5, 6, 7, 8];
+const widthOf = (n: number) => (n >= 6 ? 33 : n >= 4 ? 25 : n === 3 ? 23 : 21);
+const gap = 3;
+const total = order.reduce((s, n) => s + widthOf(n) + gap, -gap);
+const cx = 320;
+
+type Tooth = { fdi: number; x: number; w: number; upper: boolean; y: number; tilt: number };
+const teeth: Tooth[] = [];
+for (const upper of [true, false]) {
+  let x = cx - total / 2;
+  order.forEach((n, i) => {
+    const w = widthOf(n);
+    const left = i < 8; // patient's right side
+    const quadrant = upper ? (left ? 1 : 2) : left ? 4 : 3;
+    const mid = x + w / 2;
+    const curve = 0.00042 * (mid - cx) ** 2; // smile-shaped occlusal plane
+    const y = upper ? 150 - curve : 166 - curve;
+    teeth.push({ fdi: quadrant * 10 + n, x, w, upper, y, tilt: (mid - cx) * (upper ? -0.045 : 0.045) });
+    x += w + gap;
+  });
+}
+const crownH = 30;
+const rootH = (n: number) => (n === 3 ? 58 : n >= 6 ? 44 : 50);
+
+const label = {
+  caries: fa ? 'پوسیدگی' : 'Caries',
+  deep: fa ? 'پوسیدگی عمیق' : 'Deep caries',
+  periapical: fa ? 'ضایعه اطراف ریشه' : 'Periapical lesion',
+  impacted: fa ? 'نهفته' : 'Impacted',
+  treated: fa ? 'درمان ریشه' : 'Root canal treated',
+};
+const find = (fdi: number) => teeth.find((t) => t.fdi === fdi)!;
+const pct = (p: number) => new Intl.NumberFormat(fa ? 'fa-IR' : 'en-US', { style: 'percent' }).format(p);
+const fdiNum = (n: number) => new Intl.NumberFormat(fa ? 'fa-IR' : 'en-US').format(n);
+const findings = [
+  { fdi: 36, kind: 'caries', color: '#f59e0b', text: label.caries, p: 0.86, area: 'crown' },
+  { fdi: 16, kind: 'deep', color: '#f97316', text: label.deep, p: 0.71, area: 'crown' },
+  { fdi: 21, kind: 'periapical', color: '#ef4444', text: label.periapical, p: 0.64, area: 'apex' },
+  { fdi: 48, kind: 'impacted', color: '#a78bfa', text: label.impacted, p: 0.95, area: 'whole' },
+  { fdi: 46, kind: 'treated', color: '#2dd4bf', text: label.treated, p: 0.93, area: 'whole' },
+].map((f) => {
+  const t = find(f.fdi);
+  const r = rootH(t.fdi % 10);
+  let bx = t.x - 4, bw = t.w + 8, by: number, bh: number;
+  if (f.area === 'crown') {
+    by = t.upper ? t.y - crownH - 4 : t.y - 4;
+    bh = crownH + 8;
+  } else if (f.area === 'apex') {
+    by = t.upper ? t.y - crownH - r - 12 : t.y + crownH + r - 12;
+    bh = 26;
+  } else {
+    by = t.upper ? t.y - crownH - r - 4 : t.y - 4;
+    bh = crownH + r + 8;
+  }
+  const text = `${fdiNum(f.fdi)} · ${f.text} ${pct(f.p)}`;
+  const labelW = text.length * 6.4 + 16;
+  // Keep labels inside the 640px frame.
+  const lx = Math.min(Math.max(bx, 8), 632 - labelW);
+  return { ...f, bx, by, bw, bh, upper: t.upper, label: text, labelW, lx };
+});
+---
+
+<figure class="pano">
+  <svg viewBox="0 0 640 330" role="img" aria-labelledby="pano-title" dir="ltr">
+    <title id="pano-title">{fa ? 'تصویر نمادین رادیوگرافی پانورامیک با یافته‌های هوش مصنوعی' : 'Illustrated panoramic X-ray with AI findings'}</title>
+    <defs>
+      <radialGradient id="pano-bg" cx="50%" cy="45%" r="70%">
+        <stop offset="0" stop-color="#2a3646" />
+        <stop offset="1" stop-color="#05080d" />
+      </radialGradient>
+      <linearGradient id="tooth" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#f1f5f9" />
+        <stop offset="1" stop-color="#a5b1c2" />
+      </linearGradient>
+      <filter id="soft"><feGaussianBlur stdDeviation="0.6" /></filter>
+    </defs>
+    <rect width="640" height="330" rx="22" fill="url(#pano-bg)" />
+    <!-- jaw outlines -->
+    <path d="M40 120 Q320 -10 600 120" fill="none" stroke="#6b7a8f" stroke-opacity=".35" stroke-width="10" />
+    <path d="M60 210 Q320 360 580 210" fill="none" stroke="#8a99ad" stroke-opacity=".35" stroke-width="22" />
+    <path d="M110 165 Q320 205 530 165" fill="none" stroke="#000" stroke-opacity=".35" stroke-width="6" />
+
+    <g filter="url(#soft)">
+      {teeth.map((t) => {
+        const n = t.fdi % 10;
+        const r = rootH(n);
+        const cxT = t.x + t.w / 2;
+        const crownY = t.upper ? t.y - crownH : t.y;
+        const rootY = t.upper ? crownY : t.y + crownH;
+        const tip = t.upper ? rootY - r : rootY + r;
+        const impacted = t.fdi === 48;
+        const treated = t.fdi === 46;
+        return (
+          <g transform={`rotate(${impacted ? 38 : t.tilt} ${cxT} ${t.y})`} opacity={impacted ? 0.9 : 1}>
+            {n >= 6 ? (
+              <path d={`M${t.x + 3} ${rootY} L${t.x + 7} ${tip} L${cxT - 2} ${rootY} L${cxT + 2} ${rootY} L${t.x + t.w - 7} ${tip} L${t.x + t.w - 3} ${rootY} Z`} fill="#c5cedb" opacity=".75" />
+            ) : (
+              <path d={`M${t.x + 3} ${rootY} L${cxT} ${tip} L${t.x + t.w - 3} ${rootY} Z`} fill="#c5cedb" opacity=".75" />
+            )}
+            <rect x={t.x} y={crownY} width={t.w} height={crownH} rx="7" fill="url(#tooth)" />
+            {treated && <path d={`M${cxT} ${rootY} L${cxT} ${tip - 4}`} stroke="#fff" stroke-width="3" />}
+            {treated && <rect x={t.x + 6} y={crownY + 4} width={t.w - 12} height="12" rx="3" fill="#fff" />}
+          </g>
+        );
+      })}
+    </g>
+    <!-- lesion shading -->
+    <circle cx={find(36).x + 12} cy={find(36).y + 10} r="6" fill="#111827" opacity=".7" />
+    <circle cx={find(16).x + 16} cy={find(16).y - 14} r="8" fill="#111827" opacity=".75" />
+    <circle cx={find(21).x + find(21).w / 2} cy={find(21).y - crownH - rootH(1) + 2} r="9" fill="#111827" opacity=".8" />
+
+    {findings.map((f, i) => (
+      <g class="finding" style={`--d:${0.3 + i * 0.25}s`}>
+        <rect x={f.bx} y={f.by} width={f.bw} height={f.bh} rx="6" fill="none" stroke={f.color} stroke-width="2.4" />
+        <g transform={`translate(${f.lx} ${f.upper ? f.by - 22 : f.by + f.bh + 4})`}>
+          <rect width={f.labelW} height="18" rx="9" fill={f.color} />
+          <text x={f.labelW / 2} y="13" text-anchor="middle" font-size="10.5" font-weight="700" fill="#0b1220" font-family={fa ? 'Vazirmatn Variable, sans-serif' : 'Inter Variable, sans-serif'}>
+            {f.label}
+          </text>
+        </g>
+      </g>
+    ))}
+  </svg>
+  <slot />
+</figure>
+
+<style>
+  .pano {
+    margin: 0;
+  }
+  svg {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 22px;
+    box-shadow: 0 30px 60px rgba(7, 22, 51, 0.25);
+  }
+  .finding {
+    opacity: 0;
+    animation: pop 0.5s ease forwards;
+    animation-delay: var(--d);
+  }
+  @keyframes pop {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .finding {
+      animation: none;
+      opacity: 1;
+    }
+  }
+</style>

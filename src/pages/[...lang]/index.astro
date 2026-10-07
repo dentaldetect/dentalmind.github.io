@@ -1,0 +1,378 @@
+---
+import Base from '../../layouts/Base.astro';
+import PanoSketch from '../../components/PanoSketch.astro';
+import StatusChip from '../../components/StatusChip.astro';
+import { site } from '../../data/site';
+import { t, lp, langPaths, num, type Lang } from '../../lib/i18n';
+import { highlights, getRow, fmt } from '../../lib/metrics';
+
+export const getStaticPaths = langPaths;
+const { lang } = Astro.props as { lang: Lang };
+const d = t(lang);
+const h = d.home;
+
+const metricsShown = highlights.map((x) => {
+  const { row } = getRow(x.group, x.row);
+  return { label: x.label[lang as 'en' | 'fa'], value: fmt(lang, row), weak: x.row === 'external' };
+});
+const stages = d.product.stages.slice(1, 6);
+const icons: Record<string, string> = {
+  teeth: 'M7 4c-2 0-3 2-3 4 0 3 1 5 2 8 .5 2 1 4 2 4s1.5-3 2-5c.5 2 1 5 2 5s1.5-2 2-4c1-3 2-5 2-8 0-2-1-4-3-4-1 0-2 .7-3 .7S8 4 7 4Z',
+  findings: 'M4 4h6v2H6v4H4V4Zm10 0h6v6h-2V6h-4V4ZM4 14h2v4h4v2H4v-6Zm14 0h2v6h-6v-2h4v-4Z',
+  cluster: 'M5 5h5v5H5zM14 5h5v5h-5zM5 14h5v5H5zM14 14h5v5h-5z',
+  prompts: 'M5 4h14v4H5zM5 10h10v4H5zM5 16h7v4H5z',
+  outlook: 'M3 18l5-6 4 3 6-8 3 3',
+};
+---
+
+<Base lang={lang}>
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div class="hero-copy">
+        <span class="eyebrow">{h.eyebrow}</span>
+        <h1>{h.title}</h1>
+        <p class="lede">{h.subtitle}</p>
+        <div class="cta-row">
+          <a class="btn btn-primary" href={lp(lang, '/request-demo/')}>{h.ctaPrimary}</a>
+          <a class="btn btn-ghost" href={lp(lang, '/evidence/')}>{h.ctaSecondary}</a>
+        </div>
+        <p class="disc">{d.disclaimer}</p>
+      </div>
+      <PanoSketch lang={lang}>
+        <figcaption class="muted cap">{h.heroCaption}</figcaption>
+      </PanoSketch>
+    </div>
+  </section>
+
+  <section class="section steps-sec">
+    <div class="wrap">
+      <div class="section-head"><h2>{h.stepsTitle}</h2></div>
+      <ol class="steps">
+        {h.steps.map((s, i) => (
+          <li class="card step">
+            <span class="step-n">{num(lang, i + 1, 0)}</span>
+            <h3>{s.title}</h3>
+            <p>{s.text}</p>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <section class="section product-sec">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>{h.productTitle}</h2>
+        <p>{h.productSubtitle}</p>
+      </div>
+      <div class="grid features">
+        {stages.map((s) => (
+          <a class="card feature" href={lp(lang, `/product/#${s.id}`)}>
+            <svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true"><path d={icons[s.id]} fill={s.id === 'outlook' ? 'none' : 'currentColor'} stroke={s.id === 'outlook' ? 'currentColor' : 'none'} stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+            <h3>{s.title}</h3>
+            <p>{s.text}</p>
+            <StatusChip lang={lang} status={s.status} />
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section metrics-sec">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">{d.nav.evidence}</span>
+        <h2>{h.metricsTitle}</h2>
+        <p>{h.metricsSubtitle}</p>
+      </div>
+      <div class="metrics">
+        {metricsShown.map((m) => (
+          <div class={`metric ${m.weak ? 'weak' : ''}`}>
+            <span class="metric-v">{m.value}</span>
+            <span class="metric-l">{m.label}</span>
+          </div>
+        ))}
+      </div>
+      <a class="more" href={lp(lang, '/evidence/')}>{h.metricsLink} {lang === 'fa' ? '←' : '→'}</a>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head"><h2>{h.audienceTitle}</h2></div>
+      <div class="grid grid-3">
+        {(['dentists', 'clinics', 'universities'] as const).map((k) => (
+          <a class="card aud" href={lp(lang, `/for/${k}/`)}>
+            <h3>{d.audiences[k].title}</h3>
+            <p>{d.audiences[k].short}</p>
+            <span class="arrow" aria-hidden="true">{lang === 'fa' ? '←' : '→'}</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section eye-sec">
+    <div class="wrap eye card">
+      <svg viewBox="0 0 48 48" width="56" height="56" aria-hidden="true"><path d="M4 24s7-12 20-12 20 12 20 12-7 12-20 12S4 24 4 24Z" fill="none" stroke="currentColor" stroke-width="3" /><circle cx="24" cy="24" r="6" fill="currentColor" /></svg>
+      <div>
+        <h2>{h.eyeTitle}</h2>
+        <p>{h.eyeText}</p>
+        <a href={site.eyeScreeningUrl} rel="noopener">{lang === 'fa' ? 'درباره غربالگری رتینوپاتی دیابتی بخوانید' : 'Read about diabetic retinopathy screening (in Persian)'} {lang === 'fa' ? '←' : '→'}</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section faq-sec">
+    <div class="wrap faq-wrap">
+      <div class="section-head"><h2>{h.faqTitle}</h2></div>
+      <div class="faq">
+        {h.faq.map((f) => (
+          <details>
+            <summary>{f.q}</summary>
+            <p>{f.a}</p>
+          </details>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-band">
+    <div class="wrap cta-inner">
+      <div>
+        <h2>{h.ctaTitle}</h2>
+        <p>{h.ctaText}</p>
+      </div>
+      <a class="btn btn-primary" href={lp(lang, '/request-demo/')}>{h.ctaPrimary}</a>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .hero {
+    background:
+      radial-gradient(circle at 80% 0%, rgba(11, 169, 154, 0.14), transparent 55%),
+      radial-gradient(circle at 0% 100%, rgba(7, 22, 51, 0.06), transparent 50%);
+    padding-block: 64px 72px;
+  }
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.15fr;
+    gap: 48px;
+    align-items: center;
+  }
+  @media (max-width: 900px) {
+    .hero-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  h1 {
+    font-size: clamp(2.2rem, 5vw, 3.5rem);
+    font-weight: 800;
+  }
+  .lede {
+    font-size: 1.15rem;
+    color: var(--ink-2);
+    margin: 18px 0 26px;
+  }
+  .cta-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .disc {
+    font-size: 0.82rem;
+    color: var(--ink-3);
+    margin-block-start: 22px;
+    max-width: 520px;
+  }
+  .cap {
+    font-size: 0.8rem;
+    margin-block-start: 10px;
+    text-align: center;
+  }
+
+  .steps-sec {
+    padding-block-start: 24px;
+  }
+  .steps {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 20px;
+    counter-reset: s;
+  }
+  .step-n {
+    display: inline-flex;
+    width: 36px;
+    height: 36px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: var(--teal-50);
+    color: var(--teal-600);
+    font-weight: 800;
+    margin-block-end: 12px;
+  }
+  .step h3,
+  .feature h3,
+  .aud h3 {
+    font-size: 1.15rem;
+    margin-block-end: 6px;
+  }
+  .step p,
+  .feature p,
+  .aud p {
+    color: var(--ink-2);
+    margin: 0 0 12px;
+  }
+
+  .product-sec {
+    background: var(--surface-2);
+  }
+  .features {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  }
+  .feature {
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    transition: transform 0.15s ease;
+  }
+  .feature:hover,
+  .aud:hover {
+    text-decoration: none;
+    transform: translateY(-2px);
+  }
+  .feature svg {
+    color: var(--teal);
+    margin-block-end: 12px;
+  }
+  .feature p {
+    flex: 1;
+  }
+
+  .metrics-sec {
+    background: var(--navy);
+    color: #fff;
+  }
+  .metrics-sec h2 {
+    color: #fff;
+  }
+  .metrics-sec .section-head p {
+    color: #b6c3d6;
+  }
+  .metrics-sec .eyebrow {
+    color: var(--teal);
+  }
+  .metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1px;
+    background: #1d3354;
+    border-radius: var(--r);
+    overflow: hidden;
+  }
+  .metric {
+    background: var(--navy-2);
+    padding: 26px 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .metric-v {
+    font-size: 2.6rem;
+    font-weight: 800;
+    color: var(--teal);
+    letter-spacing: -0.03em;
+  }
+  .metric.weak .metric-v {
+    color: #f5b45a;
+  }
+  .metric-l {
+    color: #c8d3e3;
+    font-size: 0.92rem;
+  }
+  .more {
+    display: inline-block;
+    margin-block-start: 22px;
+    color: var(--teal);
+    font-weight: 700;
+  }
+
+  .aud {
+    color: inherit;
+    position: relative;
+  }
+  .arrow {
+    color: var(--teal);
+    font-weight: 800;
+    font-size: 1.2rem;
+  }
+
+  .eye {
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+    background: linear-gradient(135deg, var(--teal-50), var(--surface));
+  }
+  .eye svg {
+    color: var(--teal);
+    flex: none;
+  }
+  .eye h2 {
+    font-size: 1.5rem;
+    margin-block-end: 8px;
+  }
+  .eye p {
+    color: var(--ink-2);
+    margin: 0 0 10px;
+  }
+  @media (max-width: 560px) {
+    .eye {
+      flex-direction: column;
+    }
+  }
+
+  .faq-wrap {
+    max-width: 860px;
+  }
+  .faq details {
+    border-block-end: 1px solid var(--rule);
+    padding-block: 16px;
+  }
+  .faq summary {
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 1.05rem;
+  }
+  .faq p {
+    color: var(--ink-2);
+    margin: 10px 0 0;
+  }
+
+  .cta-band {
+    background: linear-gradient(120deg, var(--navy), #0b3a4f);
+    color: #fff;
+    padding-block: 56px;
+  }
+  .cta-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .cta-band h2 {
+    color: #fff;
+    font-size: clamp(1.5rem, 3vw, 2rem);
+  }
+  .cta-band p {
+    color: #c8d3e3;
+    margin: 8px 0 0;
+    max-width: 640px;
+  }
+</style>

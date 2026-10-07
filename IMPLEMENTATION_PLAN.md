@@ -1,5 +1,7 @@
 # Implementation plan: dentalmind.github.io
 
+> **Status (2026-10-07):** phases 0–3 built and verified locally: 27 pages (13 English + 13 Persian + 404), Evidence page fed from `metrics.json` (real results from the DentalMind evaluation report, 2026-09-30), 3 blog posts ported from `dentalmind-web`, 0 broken internal links, no horizontal scroll at 375 px. Changes from the plan: plain CSS instead of Tailwind; one `/product/` page with anchored sections instead of three; English is the default language. Not done yet: demo form endpoint (falls back to GitHub issues), in-browser ONNX demo (phase 4), app link (`appUrl` empty).
+
 The product and research site for DentalMind, an AI second reader for panoramic dental
 X-rays. Its structure follows hellopearl.com: an audience menu, product pages, a "request a
 demo" button, value cards, social proof and a resources footer. DentalMind adds two things

@@ -1,0 +1,88 @@
+---
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import Base from '../../../layouts/Base.astro';
+import { t, lp, langs, type Lang } from '../../../lib/i18n';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  return langs.flatMap((lang) =>
+    posts.map((post) => ({ params: { lang: lang === 'en' ? undefined : lang, slug: post.id }, props: { lang, post } })),
+  );
+}
+const { lang, post } = Astro.props as { lang: Lang; post: CollectionEntry<'blog'> };
+const d = t(lang);
+const { Content } = await render(post);
+const date = new Intl.DateTimeFormat('en-GB', { dateStyle: 'long' }).format(post.data.date);
+---
+
+<Base lang={lang} title={post.data.title} description={post.data.description} active="blog">
+  <article class="wrap article" lang="en" dir="ltr">
+    <a class="back" href={lp(lang, '/blog/')}>← {lang === 'fa' ? 'All articles' : d.blog.back}</a>
+    <span class="tag">{post.data.tag}</span>
+    <h1>{post.data.title}</h1>
+    <p class="lede">{post.data.description}</p>
+    <p class="muted meta">{date} · {post.data.minutes} min read</p>
+    <div class="prose"><Content /></div>
+  </article>
+</Base>
+
+<style>
+  .article {
+    max-width: 760px;
+    padding-block: 48px 24px;
+    font-family: 'Inter Variable', Inter, sans-serif;
+    line-height: 1.75;
+  }
+  .back {
+    display: inline-block;
+    font-weight: 600;
+    margin-block-end: 24px;
+  }
+  .tag {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--teal-600);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  h1 {
+    font-size: clamp(1.9rem, 4vw, 2.6rem);
+    font-weight: 800;
+    margin-block: 8px 12px;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+  }
+  .lede {
+    font-size: 1.15rem;
+    color: var(--ink-2);
+    margin: 0;
+  }
+  .meta {
+    font-size: 0.9rem;
+    border-block-end: 1px solid var(--rule);
+    padding-block-end: 16px;
+  }
+  .prose {
+    font-size: 1.07rem;
+  }
+  .prose :global(h2) {
+    font-size: 1.45rem;
+    margin-block: 32px 8px;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+  }
+  .prose :global(blockquote) {
+    margin: 20px 0;
+    padding: 10px 16px;
+    border-inline-start: 4px solid var(--teal);
+    background: var(--teal-50);
+    border-radius: 0 10px 10px 0;
+  }
+  .prose :global(blockquote p) {
+    margin: 0;
+  }
+  .prose :global(li) {
+    margin-block: 6px;
+  }
+</style>

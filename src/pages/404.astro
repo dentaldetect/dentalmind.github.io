@@ -1,0 +1,31 @@
+---
+import Base from '../layouts/Base.astro';
+import { t, lp } from '../lib/i18n';
+const en = t('en');
+const fa = t('fa');
+---
+
+<Base lang="en" title={en.notFound.title} alternate={lp('fa', '/')}>
+  <section class="wrap nf">
+    <h1>{en.notFound.title}</h1>
+    <p>{en.notFound.text}</p>
+    <p lang="fa" dir="rtl">{fa.notFound.text}</p>
+    <p>
+      <a class="btn btn-primary" href={lp('en', '/')}>{en.notFound.home}</a>
+      <a class="btn btn-ghost" href={lp('fa', '/')} lang="fa">{fa.notFound.home}</a>
+    </p>
+  </section>
+</Base>
+
+<style>
+  .nf {
+    text-align: center;
+    padding-block: 80px;
+  }
+  .nf p {
+    color: var(--ink-2);
+  }
+  .nf .btn {
+    margin: 6px;
+  }
+</style>

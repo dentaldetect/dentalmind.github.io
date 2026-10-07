@@ -1,0 +1,327 @@
+---
+import '@fontsource-variable/inter';
+import '@fontsource-variable/vazirmatn';
+import '../styles/global.css';
+import { site } from '../data/site';
+import { t, dir, lp, asset, switchLang, type Lang } from '../lib/i18n';
+
+interface Props {
+  lang: Lang;
+  title?: string;
+  description?: string;
+  active?: string;
+  /** Override for the language-switch link (pages with no translated twin, e.g. 404). */
+  alternate?: string;
+}
+const { lang, title, description, active, alternate } = Astro.props;
+const d = t(lang);
+const name = site.name[lang];
+const fullTitle = title ? `${title} | ${name}` : `${name}: ${d.meta.tagline}`;
+const desc = description ?? d.meta.description;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const other = alternate ?? switchLang(lang, Astro.url.pathname);
+const otherLang = lang === 'en' ? 'fa' : 'en';
+
+const nav = [
+  { key: 'product', href: lp(lang, '/product/'), label: d.nav.product },
+  { key: 'evidence', href: lp(lang, '/evidence/'), label: d.nav.evidence },
+  { key: 'for', href: lp(lang, '/for/dentists/'), label: d.nav.solutions },
+  { key: 'blog', href: lp(lang, '/blog/'), label: d.nav.blog },
+  { key: 'about', href: lp(lang, '/about/'), label: d.nav.about },
+];
+const year = new Date().getFullYear();
+---
+
+<!doctype html>
+<html lang={lang} dir={dir(lang)}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={desc} />
+    <link rel="canonical" href={canonical} />
+    <link rel="alternate" hreflang={lang} href={canonical} />
+    <link rel="alternate" hreflang={otherLang} href={new URL(other, Astro.site)} />
+    <link rel="icon" type="image/svg+xml" href={asset('/favicon.svg')} />
+    <link rel="sitemap" href={asset('/sitemap-index.xml')} />
+    <meta name="theme-color" content="#071633" />
+    <meta property="og:site_name" content={name} />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title ?? name} />
+    <meta property="og:description" content={desc} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:locale" content={lang === 'fa' ? 'fa_IR' : 'en_US'} />
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'SoftwareApplication',
+        name: 'DentalMind',
+        applicationCategory: 'MedicalApplication',
+        description: d.meta.description,
+        inLanguage: lang,
+        url: new URL(lp(lang, '/'), Astro.site).href,
+      })}
+    />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">{d.nav.skip}</a>
+    <header class="site-header">
+      <div class="wrap bar">
+        <a class="logo" href={lp(lang, '/')} aria-label={name}>
+          <img src={asset('/brand/dentalmind-mark.svg')} alt="" width="30" height="34" />
+          <span class="logo-word" dir="ltr"><b>DENTAL</b><span>MIND</span></span>
+        </a>
+        <nav class="nav" aria-label={d.nav.menu} id="site-nav">
+          <ul>
+            {nav.map((n) => (
+              <li><a href={n.href} aria-current={active === n.key ? 'page' : undefined}>{n.label}</a></li>
+            ))}
+            <li class="nav-cta"><a href={lp(lang, '/request-demo/')}>{d.nav.requestDemo}</a></li>
+          </ul>
+        </nav>
+        <div class="actions">
+          <a class="lang" href={other} hreflang={otherLang} lang={otherLang}>{d.nav.language}</a>
+          <a class="btn btn-primary btn-sm" href={lp(lang, '/request-demo/')}>{d.nav.requestDemo}</a>
+          <button class="menu-btn" type="button" aria-expanded="false" aria-controls="site-nav" aria-label={d.nav.menu}>
+            <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></svg>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main id="main">
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <div class="wrap foot-grid">
+        <div>
+          <span class="logo-word light" dir="ltr"><b>DENTAL</b><span>MIND</span></span>
+          <p class="foot-tag">{d.meta.tagline}</p>
+          <p class="foot-disc">{d.disclaimer}</p>
+        </div>
+        <nav aria-label={d.footer.product}>
+          <span class="foot-head">{d.footer.product}</span>
+          <ul>
+            <li><a href={lp(lang, '/product/')}>{d.nav.product}</a></li>
+            <li><a href={lp(lang, '/evidence/')}>{d.nav.evidence}</a></li>
+            <li><a href={lp(lang, '/request-demo/')}>{d.nav.requestDemo}</a></li>
+            {site.appUrl && <li><a href={site.appUrl}>{d.nav.openApp}</a></li>}
+          </ul>
+        </nav>
+        <nav aria-label={d.nav.solutions}>
+          <span class="foot-head">{d.nav.solutions}</span>
+          <ul>
+            <li><a href={lp(lang, '/for/dentists/')}>{d.audiences.dentists.title}</a></li>
+            <li><a href={lp(lang, '/for/clinics/')}>{d.audiences.clinics.title}</a></li>
+            <li><a href={lp(lang, '/for/universities/')}>{d.audiences.universities.title}</a></li>
+          </ul>
+        </nav>
+        <nav aria-label={d.footer.company}>
+          <span class="foot-head">{d.footer.company}</span>
+          <ul>
+            <li><a href={lp(lang, '/about/')}>{d.nav.about}</a></li>
+            <li><a href={lp(lang, '/blog/')}>{d.nav.blog}</a></li>
+            <li><a href={lp(lang, '/privacy/')}>{d.footer.privacy}</a></li>
+            <li><a href={site.repo} rel="noopener">{d.footer.github}</a></li>
+          </ul>
+        </nav>
+      </div>
+      <div class="wrap foot-bottom">© {lang === 'fa' ? new Intl.NumberFormat('fa-IR', { useGrouping: false }).format(year) : year} {d.footer.rights}</div>
+    </footer>
+
+    <script>
+      const btn = document.querySelector<HTMLButtonElement>('.menu-btn');
+      const nav = document.getElementById('site-nav');
+      btn?.addEventListener('click', () => {
+        const open = btn.getAttribute('aria-expanded') === 'true';
+        btn.setAttribute('aria-expanded', String(!open));
+        nav?.classList.toggle('open', !open);
+      });
+    </script>
+  </body>
+</html>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: color-mix(in srgb, var(--surface) 88%, transparent);
+    backdrop-filter: saturate(1.4) blur(10px);
+    border-block-end: 1px solid var(--rule);
+  }
+  .bar {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    min-height: 68px;
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .logo:hover {
+    text-decoration: none;
+  }
+  .logo-word {
+    font-family: 'Inter Variable', Inter, sans-serif;
+    font-size: 1.25rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+  }
+  .logo-word b {
+    color: var(--ink);
+  }
+  .logo-word span {
+    color: var(--teal);
+  }
+  .logo-word.light b {
+    color: #fff;
+  }
+  .nav {
+    flex: 1;
+  }
+  .nav ul {
+    display: flex;
+    gap: 4px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .nav a {
+    display: block;
+    padding: 8px 12px;
+    border-radius: 999px;
+    color: var(--ink-2);
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+  .nav a:hover {
+    background: var(--surface-2);
+    text-decoration: none;
+    color: var(--ink);
+  }
+  .nav a[aria-current='page'] {
+    color: var(--teal-600);
+    background: var(--teal-50);
+  }
+  .actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .lang {
+    font-weight: 600;
+    font-size: 0.92rem;
+    color: var(--ink-2);
+  }
+  .btn-sm {
+    min-height: 40px;
+    padding: 0 18px;
+    font-size: 0.92rem;
+  }
+  .menu-btn {
+    display: none;
+    width: 42px;
+    height: 42px;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--ink);
+    cursor: pointer;
+  }
+  @media (max-width: 920px) {
+    .menu-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .nav {
+      position: absolute;
+      inset-inline: 0;
+      top: 100%;
+      background: var(--surface);
+      border-block-end: 1px solid var(--rule);
+      display: none;
+      padding: 8px var(--gutter) 16px;
+    }
+    .nav.open {
+      display: block;
+    }
+    .nav ul {
+      flex-direction: column;
+    }
+    .bar {
+      justify-content: space-between;
+    }
+  }
+  .nav-cta {
+    display: none;
+  }
+  @media (max-width: 480px) {
+    .actions .btn-sm {
+      display: none;
+    }
+    .nav-cta {
+      display: block;
+    }
+    .nav-cta a {
+      color: var(--teal-600);
+      font-weight: 700;
+    }
+  }
+
+  .site-footer {
+    background: var(--navy);
+    color: #b6c3d6;
+    padding-block: 48px 20px;
+    font-size: 0.92rem;
+  }
+  .site-footer a {
+    color: #e4ecf7;
+  }
+  .foot-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 32px;
+  }
+  @media (max-width: 820px) {
+    .foot-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+    .foot-grid > div:first-child {
+      grid-column: 1 / -1;
+    }
+  }
+  .foot-tag {
+    color: #fff;
+    margin: 6px 0;
+  }
+  .foot-disc {
+    font-size: 0.82rem;
+    color: #8e9db3;
+    max-width: 440px;
+  }
+  .foot-head {
+    display: block;
+    color: #fff;
+    font-weight: 700;
+    margin-block-end: 8px;
+  }
+  .site-footer ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    line-height: 2.1;
+  }
+  .foot-bottom {
+    border-block-start: 1px solid #1d3354;
+    margin-block-start: 32px;
+    padding-block-start: 14px;
+    font-size: 0.82rem;
+    color: #8e9db3;
+  }
+</style>

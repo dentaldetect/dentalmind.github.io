@@ -1,0 +1,28 @@
+---
+import Page from '../../layouts/Page.astro';
+import { t, langPaths, type Lang } from '../../lib/i18n';
+
+export const getStaticPaths = langPaths;
+const { lang } = Astro.props as { lang: Lang };
+const d = t(lang);
+---
+
+<Page lang={lang} title={d.privacy.title}>
+  <section class="section">
+    <div class="wrap body">
+      <ul>{d.privacy.body.map((p) => <li>{p}</li>)}</ul>
+      <p class="muted">{d.disclaimer}</p>
+    </div>
+  </section>
+</Page>
+
+<style>
+  .body {
+    max-width: 760px;
+    font-size: 1.08rem;
+  }
+  li {
+    margin-block: 10px;
+    color: var(--ink-2);
+  }
+</style>

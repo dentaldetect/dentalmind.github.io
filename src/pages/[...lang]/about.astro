@@ -1,0 +1,65 @@
+---
+import Page from '../../layouts/Page.astro';
+import { site } from '../../data/site';
+import { t, lp, langPaths, type Lang } from '../../lib/i18n';
+
+export const getStaticPaths = langPaths;
+const { lang } = Astro.props as { lang: Lang };
+const d = t(lang);
+const a = d.about;
+---
+
+<Page lang={lang} title={a.title} subtitle={d.meta.tagline} active="about">
+  <section class="section">
+    <div class="wrap two">
+      <div class="body">
+        {a.body.map((p) => <p>{p}</p>)}
+        <p>
+          <a href={site.healthPortalUrl} rel="noopener">{lang === 'fa' ? 'سلامت ایران: اخبار و دانستنی‌های سلامت' : 'Iranian Healthcare, our Persian health news portal'}</a>
+          {' · '}
+          <a href={lp(lang, '/evidence/')}>{d.nav.evidence}</a>
+        </p>
+      </div>
+      <div>
+        <h2 class="h2">{a.principlesTitle}</h2>
+        <div class="grid">
+          {a.principles.map((p) => (
+            <div class="card">
+              <h3>{p.t}</h3>
+              <p>{p.d}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+</Page>
+
+<style>
+  .two {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 48px;
+  }
+  @media (max-width: 860px) {
+    .two {
+      grid-template-columns: 1fr;
+    }
+  }
+  .body p {
+    font-size: 1.1rem;
+    color: var(--ink-2);
+    margin-block: 0 18px;
+  }
+  .h2 {
+    font-size: 1.5rem;
+    margin-block-end: 16px;
+  }
+  h3 {
+    font-size: 1.05rem;
+  }
+  .card p {
+    color: var(--ink-2);
+    margin: 4px 0 0;
+  }
+</style>

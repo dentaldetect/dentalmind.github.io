@@ -1,0 +1,44 @@
+---
+// Inner-page shell: title band + content.
+import Base from './Base.astro';
+import type { Lang } from '../lib/i18n';
+interface Props {
+  lang: Lang;
+  title: string;
+  subtitle?: string;
+  eyebrow?: string;
+  active?: string;
+  description?: string;
+}
+const { lang, title, subtitle, eyebrow, active, description } = Astro.props;
+---
+
+<Base lang={lang} title={title} description={description ?? subtitle} active={active}>
+  <section class="page-head">
+    <div class="wrap">
+      {eyebrow && <span class="eyebrow">{eyebrow}</span>}
+      <h1>{title}</h1>
+      {subtitle && <p>{subtitle}</p>}
+      <slot name="head" />
+    </div>
+  </section>
+  <slot />
+</Base>
+
+<style>
+  .page-head {
+    background: radial-gradient(circle at 85% 0%, rgba(11, 169, 154, 0.13), transparent 55%);
+    padding-block: 56px 40px;
+    border-block-end: 1px solid var(--rule);
+  }
+  h1 {
+    font-size: clamp(2rem, 4.5vw, 3rem);
+    font-weight: 800;
+  }
+  p {
+    color: var(--ink-2);
+    font-size: 1.12rem;
+    max-width: 760px;
+    margin: 12px 0 0;
+  }
+</style>

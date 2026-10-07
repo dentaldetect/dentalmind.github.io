@@ -1,0 +1,171 @@
+---
+import Page from '../../layouts/Page.astro';
+import { t, langPaths, type Lang } from '../../lib/i18n';
+import { groups, fmt, metricName, localized, count, measuredOn, type Row } from '../../lib/metrics';
+
+export const getStaticPaths = langPaths;
+const { lang } = Astro.props as { lang: Lang };
+const d = t(lang);
+const e = d.evidence;
+const date = new Intl.DateTimeFormat(lang === 'fa' ? 'fa-IR-u-ca-persian' : 'en-GB', { dateStyle: 'long' }).format(new Date(measuredOn));
+const nLabel = lang === 'fa' ? 'تعداد' : 'n';
+// Bar width for a 0–1 score; AUROC bars start at 0.5 (chance).
+const bar = (row: Row, metric: string) => {
+  if (row.kind === 'percent') return null;
+  const lo = metric === 'AUROC' ? 0.5 : 0;
+  return Math.max(0, Math.min(1, (row.value - lo) / (1 - lo))) * 100;
+};
+---
+
+<Page lang={lang} title={e.title} subtitle={e.subtitle} active="evidence">
+  <p slot="head" class="stamp">{e.measured}: {date} · {e.source}</p>
+
+  <section class="section">
+    <div class="wrap layout">
+      <div class="groups">
+        {groups.map((g) => {
+          const metric = metricName(g);
+          return (
+            <section class="card group" aria-labelledby={`g-${g.id}`}>
+              <h2 id={`g-${g.id}`}>{localized(g.title, lang)}</h2>
+              <p class="muted small">
+                <span class="ltr">{localized(g.model, lang)}</span> · {localized(g.data, lang)}
+              </p>
+              <div class="table-scroll">
+                <table class="data">
+                  <thead>
+                    <tr>
+                      <th scope="col">{lang === 'fa' ? 'سنجه' : 'Measure'}</th>
+                      <th scope="col" class="num">{metric}</th>
+                      <th scope="col" class="bar-col"><span class="visually-hidden">{metric}</span></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {g.rows.map((r) => {
+                      const row = r as Row;
+                      const w = bar(row, metric);
+                      return (
+                        <tr class={row.weak ? 'weak' : ''}>
+                          <td>
+                            {localized(row.label, lang)}
+                            {row.n && <span class="muted small"> ({nLabel} = {count(lang, row.n)})</span>}
+                          </td>
+                          <td class="num"><b>{fmt(lang, row)}</b></td>
+                          <td class="bar-col">{w !== null && <span class="bar"><span style={`inline-size:${w}%`} /></span>}</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </section>
+          );
+        })}
+      </div>
+
+      <aside class="side">
+        <div class="card">
+          <h2>{e.howToRead}</h2>
+          <ul>{e.howToReadItems.map((i) => <li>{i}</li>)}</ul>
+        </div>
+        <div class="card limits">
+          <h2>{e.limitsTitle}</h2>
+          <ul>{e.limits.map((i) => <li>{i}</li>)}</ul>
+        </div>
+        <div class="card">
+          <h2>{e.intendedUseTitle}</h2>
+          <p>{e.intendedUse}</p>
+        </div>
+      </aside>
+    </div>
+  </section>
+</Page>
+
+<style>
+  .stamp {
+    font-size: 0.9rem !important;
+    color: var(--ink-3) !important;
+  }
+  .layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 340px;
+    gap: 28px;
+    align-items: start;
+  }
+  @media (max-width: 960px) {
+    .layout {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+  .groups {
+    display: grid;
+    gap: 20px;
+  }
+  .group h2,
+  .side h2 {
+    font-size: 1.2rem;
+    margin-block-end: 4px;
+  }
+  .small {
+    font-size: 0.85rem;
+    margin: 0 0 10px;
+  }
+  .num {
+    text-align: end !important;
+    white-space: nowrap;
+  }
+  .bar-col {
+    width: 34%;
+  }
+  .bar {
+    display: block;
+    height: 8px;
+    background: var(--surface-2);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  .bar span {
+    display: block;
+    height: 100%;
+    background: var(--teal);
+    border-radius: 999px;
+  }
+  tr.weak td {
+    color: var(--amber);
+  }
+  tr.weak .bar span {
+    background: var(--amber);
+  }
+  .side {
+    display: grid;
+    gap: 16px;
+    position: sticky;
+    top: 88px;
+  }
+  .side ul {
+    margin: 8px 0 0;
+    padding-inline-start: 1.2em;
+    color: var(--ink-2);
+    font-size: 0.93rem;
+  }
+  .side li {
+    margin-block: 6px;
+  }
+  .side p {
+    color: var(--ink-2);
+    font-size: 0.93rem;
+    margin: 8px 0 0;
+  }
+  .limits {
+    border-color: color-mix(in srgb, var(--amber) 40%, var(--rule));
+    background: var(--amber-bg);
+  }
+  .limits h2 {
+    color: var(--amber);
+  }
+  @media (max-width: 960px) {
+    .side {
+      position: static;
+    }
+  }
+</style>

@@ -1,0 +1,88 @@
+---
+import Page from '../../../layouts/Page.astro';
+import { t, lp, langs, type Lang } from '../../../lib/i18n';
+
+const audiences = ['dentists', 'clinics', 'universities'] as const;
+type Audience = (typeof audiences)[number];
+
+export function getStaticPaths() {
+  // getStaticPaths is hoisted and can't see module-scope constants, so the list is repeated here.
+  return langs.flatMap((lang) =>
+    (['dentists', 'clinics', 'universities'] as const).map((audience) => ({ params: { lang: lang === 'en' ? undefined : lang, audience }, props: { lang, audience } })),
+  );
+}
+const { lang, audience } = Astro.props as { lang: Lang; audience: Audience };
+const d = t(lang);
+const s = d.solutions[audience];
+---
+
+<Page lang={lang} title={s.title} subtitle={s.subtitle} eyebrow={d.nav.solutions} active="for">
+  <nav slot="head" class="tabs" aria-label={d.nav.solutions}>
+    {audiences.map((a) => (
+      <a href={lp(lang, `/for/${a}/`)} aria-current={a === audience ? 'page' : undefined}>{d.audiences[a].title}</a>
+    ))}
+  </nav>
+
+  <section class="section">
+    <div class="wrap grid grid-2">
+      <div class="card pain">
+        <h2>{d.solutions.painTitle}</h2>
+        <ul>{s.pain.map((x) => <li>{x}</li>)}</ul>
+      </div>
+      <div class="card help">
+        <h2>{d.solutions.helpTitle}</h2>
+        <ul>{s.help.map((x) => <li>{x}</li>)}</ul>
+      </div>
+    </div>
+    <div class="wrap cta">
+      <a class="btn btn-primary" href={lp(lang, '/request-demo/')}>{d.nav.requestDemo}</a>
+      <a class="btn btn-ghost" href={lp(lang, '/evidence/')}>{d.home.ctaSecondary}</a>
+    </div>
+  </section>
+</Page>
+
+<style>
+  .tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-block-start: 22px;
+  }
+  .tabs a {
+    padding: 6px 16px;
+    border-radius: 999px;
+    border: 1px solid var(--rule);
+    background: var(--surface);
+    color: var(--ink-2);
+    font-weight: 600;
+  }
+  .tabs a[aria-current='page'] {
+    background: var(--teal);
+    border-color: var(--teal);
+    color: #fff;
+  }
+  h2 {
+    font-size: 1.3rem;
+    margin-block-end: 12px;
+  }
+  ul {
+    margin: 0;
+    padding-inline-start: 1.2em;
+    color: var(--ink-2);
+  }
+  li {
+    margin-block: 10px;
+  }
+  .help {
+    border-color: color-mix(in srgb, var(--teal) 45%, var(--rule));
+  }
+  .help li::marker {
+    color: var(--teal);
+  }
+  .cta {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-block-start: 28px;
+  }
+</style>
