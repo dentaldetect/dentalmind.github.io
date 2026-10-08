@@ -1,35 +1,33 @@
 ---
-import { getCollection } from 'astro:content';
 import Page from '../../../layouts/Page.astro';
-import { t, lp, langPaths, int, type Lang } from '../../../lib/i18n';
+import { t, lp, langPaths, dir, type Lang } from '../../../lib/i18n';
+import { getPosts, postLang, postDate, readTime } from '../../../lib/blog';
 
 export const getStaticPaths = langPaths;
 const { lang } = Astro.props as { lang: Lang };
 const d = t(lang);
-const posts = (await getCollection('blog')).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
-const date = (x: Date) => new Intl.DateTimeFormat('en-GB', { dateStyle: 'medium' }).format(x);
+const posts = await getPosts(lang);
 ---
 
 <Page lang={lang} title={d.blog.title} subtitle={d.blog.subtitle} active="blog">
-  {lang === 'fa' && <p slot="head" class="note">{d.blog.englishOnly}</p>}
   <section class="section">
     <div class="wrap grid grid-3">
-      {posts.map((p) => (
-        <a class="card post" href={lp(lang, `/blog/${p.id}/`)} lang="en" dir="ltr">
-          <span class="tag">{p.data.tag}</span>
-          <h2>{p.data.title}</h2>
-          <p>{p.data.description}</p>
-          <span class="muted meta">{date(p.data.date)} · {int('en', p.data.minutes)} min read</span>
-        </a>
-      ))}
+      {posts.map((p) => {
+        const pl = postLang(p);
+        return (
+          <a class="card post" href={lp(lang, `/blog/${p.id}/`)} lang={pl} dir={dir(pl)}>
+            <span class="tag">{p.data.tag}</span>
+            <h2>{p.data.title}</h2>
+            <p>{p.data.description}</p>
+            <span class="muted meta">{postDate(pl, p.data.date)} · {readTime(pl, p.data.minutes)}</span>
+          </a>
+        );
+      })}
     </div>
   </section>
 </Page>
 
 <style>
-  .note {
-    font-size: 0.95rem !important;
-  }
   .post {
     color: inherit;
     display: flex;

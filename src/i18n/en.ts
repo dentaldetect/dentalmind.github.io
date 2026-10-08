@@ -176,7 +176,6 @@ export const en = {
   blog: {
     title: 'Blog',
     subtitle: 'Research notes and engineering decisions behind DentalMind.',
-    englishOnly: 'Articles are in English.',
     back: 'All articles',
     minRead: 'min read',
   },
