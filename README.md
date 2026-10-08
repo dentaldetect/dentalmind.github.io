@@ -40,3 +40,13 @@ Push to `main`; `.github/workflows/deploy.yml` builds and publishes to GitHub Pa
 (**Settings → Pages → Source: GitHub Actions**). Served at
 `https://dentaldetect.github.io/dentalmind.github.io/`. If the repo is renamed to
 `dentaldetect.github.io` or a custom domain is added, set `base: '/'` in `astro.config.mjs`.
+
+## Backend features
+
+The demo-request form, footer newsletter sign-up, cookie-free view counts and live X-ray analysis on
+`/demo/` use the shared backend in `sites-api` (Cloudflare Worker). Build with
+`PUBLIC_API_BASE=https://<worker-url>` (in CI: the repository variable `PUBLIC_API_BASE`).
+
+Without it: the demo-request page links to GitHub issues, there is no newsletter form, and `/demo/` still
+runs the in-browser image check and shows the labelled example result. Live analysis also needs
+`MODEL_SERVICE_URL` set on the backend; until then `/demo/` explains that the model isn't connected.

@@ -1,0 +1,292 @@
+---
+import Page from '../../layouts/Page.astro';
+import PanoSketch from '../../components/PanoSketch.astro';
+import { site } from '../../data/site';
+import { exampleClusters } from '../../data/example-result';
+import { t, lp, langPaths, type Lang } from '../../lib/i18n';
+
+export const getStaticPaths = langPaths;
+const { lang } = Astro.props as { lang: Lang };
+const d = t(lang);
+const x = d.xray;
+---
+
+<Page lang={lang} title={x.title} subtitle={x.subtitle} active="demo">
+  <section class="section">
+    <div
+      class="wrap demo"
+      id="xray-app"
+      data-t={JSON.stringify(x)}
+      data-api={site.api}
+      data-lang={lang}
+      data-example={JSON.stringify(exampleClusters(lang))}
+    >
+      <div class="col-input">
+        <div class="card">
+          <label class="field" for="xr-modality">
+            {x.modality}
+            <select id="xr-modality">
+              {Object.entries(x.modalities).map(([k, v]) => <option value={k}>{v}</option>)}
+            </select>
+          </label>
+          <label class="drop" id="xr-drop" for="xr-file">
+            <svg viewBox="0 0 24 24" width="30" height="30" aria-hidden="true"><path d="M12 16V4m0 0-4 4m4-4 4 4M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+            <span class="drop-main">{x.choose}</span>
+            <span class="muted">{x.drop}</span>
+            <input id="xr-file" type="file" accept="image/jpeg,image/png" class="visually-hidden" />
+          </label>
+          <p class="muted small">{x.privacy}</p>
+          {!site.api && <p class="notice">{x.noApi}</p>}
+
+          <div id="xr-checks" hidden>
+            <h2 class="h3">{x.checksTitle}</h2>
+            <ul id="xr-checks-list" class="checks"></ul>
+            <p id="xr-verdict" class="verdict" hidden></p>
+          </div>
+
+          <div class="actions">
+            <button id="xr-analyse" class="btn btn-primary" type="button" hidden>{x.analyse}</button>
+            <button id="xr-example" class="btn btn-ghost" type="button">{x.showExample}</button>
+          </div>
+          <p id="xr-message" class="message" role="status" hidden></p>
+        </div>
+        <p class="muted small">{d.disclaimer}</p>
+      </div>
+
+      <div class="col-output">
+        <figure id="xr-preview" class="preview" hidden>
+          <canvas id="xr-canvas" dir="ltr" aria-label={x.yourImage}></canvas>
+        </figure>
+
+        <section id="xr-results" class="results" hidden aria-live="polite">
+          <h2 id="xr-results-title" class="h3"></h2>
+          <p id="xr-results-note" class="muted small"></p>
+          <div id="xr-example-figure" hidden>
+            <PanoSketch lang={lang} />
+          </div>
+          <div id="xr-clusters" class="clusters"></div>
+          <a class="btn btn-ghost" href={lp(lang, '/request-demo/')}>{d.nav.requestDemo}</a>
+        </section>
+      </div>
+    </div>
+  </section>
+</Page>
+
+<script>
+  import '../../scripts/xray-demo';
+</script>
+
+<style>
+  .demo {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    gap: 28px;
+    align-items: start;
+  }
+  @media (max-width: 900px) {
+    .demo {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+  .col-input .card {
+    display: grid;
+    gap: 16px;
+  }
+  .field {
+    display: grid;
+    gap: 6px;
+    font-weight: 600;
+  }
+  select {
+    font: inherit;
+    color: var(--ink);
+    background: var(--bg);
+    border: 1px solid var(--rule);
+    border-radius: 10px;
+    padding: 10px 12px;
+  }
+  .drop {
+    display: grid;
+    justify-items: center;
+    gap: 4px;
+    text-align: center;
+    border: 2px dashed var(--rule);
+    border-radius: var(--r);
+    padding: 28px 16px;
+    cursor: pointer;
+    color: var(--teal-600);
+    background: var(--surface-2);
+    transition: border-color 0.15s ease, background 0.15s ease;
+  }
+  .drop:hover,
+  .drop[data-over] {
+    border-color: var(--teal);
+    background: var(--teal-50);
+  }
+  .drop:focus-within {
+    outline: 3px solid var(--teal);
+    outline-offset: 2px;
+  }
+  .drop-main {
+    font-weight: 800;
+    font-size: 1.05rem;
+    color: var(--ink);
+  }
+  .small {
+    font-size: 0.85rem;
+    margin: 0;
+  }
+  .notice,
+  .message,
+  .verdict {
+    border-radius: 10px;
+    padding: 10px 12px;
+    margin: 0;
+    font-size: 0.92rem;
+    background: var(--surface-2);
+    color: var(--ink-2);
+  }
+  .message[data-kind='error'],
+  .verdict[data-kind='error'] {
+    background: #fde8e8;
+    color: #9b1c1c;
+  }
+  .verdict[data-kind='warn'] {
+    background: var(--amber-bg);
+    color: var(--amber);
+  }
+  .h3 {
+    font-size: 1.15rem;
+    margin-block-end: 10px;
+  }
+  .checks {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 8px;
+  }
+  .checks :global(li) {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.95rem;
+  }
+  .checks :global(.chip) {
+    min-width: 52px;
+    text-align: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+    border-radius: 999px;
+    padding: 2px 10px;
+  }
+  .checks :global(.chip-pass) {
+    background: var(--ok-bg);
+    color: var(--ok-ink);
+  }
+  .checks :global(.chip-warn) {
+    background: var(--amber-bg);
+    color: var(--amber);
+  }
+  .checks :global(.chip-fail) {
+    background: #fde8e8;
+    color: #9b1c1c;
+  }
+  .actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .actions button[disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
+  .preview {
+    margin: 0 0 20px;
+  }
+  .preview canvas {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: var(--r);
+    background: #05080d;
+  }
+  .results {
+    display: grid;
+    gap: 14px;
+  }
+  .results > .btn {
+    justify-self: start;
+  }
+  .clusters {
+    display: grid;
+    gap: 14px;
+  }
+  .clusters :global(.cluster) {
+    display: grid;
+    gap: 8px;
+    padding: 18px;
+  }
+  .clusters :global(.c-head) {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+  }
+  .clusters :global(.c-tooth) {
+    flex: none;
+    width: 46px;
+    height: 46px;
+    border-radius: 12px;
+    background: var(--navy);
+    color: #fff;
+    font-weight: 800;
+    display: grid;
+    place-items: center;
+    font-family: 'Inter Variable', Inter, sans-serif;
+  }
+  .clusters :global(h3) {
+    font-size: 1.05rem;
+  }
+  .clusters :global(h4) {
+    font-size: 0.85rem;
+    color: var(--ink-3);
+    margin: 4px 0 0;
+  }
+  .clusters :global(.c-meta) {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+    font-size: 0.88rem;
+  }
+  .clusters :global(.sev) {
+    font-weight: 700;
+    font-size: 0.78rem;
+    border-radius: 999px;
+    padding: 2px 10px;
+  }
+  .clusters :global(.sev-critical) {
+    background: #fde8e8;
+    color: #9b1c1c;
+  }
+  .clusters :global(.sev-high) {
+    background: var(--amber-bg);
+    color: var(--amber);
+  }
+  .clusters :global(.sev-medium) {
+    background: var(--gray-bg);
+    color: var(--gray-ink);
+  }
+  .clusters :global(.sev-low) {
+    background: var(--ok-bg);
+    color: var(--ok-ink);
+  }
+  .clusters :global(.c-findings),
+  .clusters :global(.c-list) {
+    margin: 0;
+    padding-inline-start: 1.2em;
+    color: var(--ink-2);
+    font-size: 0.93rem;
+  }
+</style>

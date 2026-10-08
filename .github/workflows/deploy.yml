@@ -25,6 +25,9 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
+        env:
+          # Repository variable (Settings → Secrets and variables → Actions → Variables). Empty = static fallbacks.
+          PUBLIC_API_BASE: ${{ vars.PUBLIC_API_BASE }}
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist

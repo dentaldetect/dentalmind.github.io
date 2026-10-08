@@ -227,3 +227,8 @@ table.data th {
 .table-scroll {
   overflow-x: auto;
 }
+
+/* Elements toggled with the hidden attribute stay hidden even when a class sets display. */
+[hidden] {
+  display: none !important;
+}

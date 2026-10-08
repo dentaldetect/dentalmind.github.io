@@ -25,6 +25,7 @@ const otherLang = lang === 'en' ? 'fa' : 'en';
 const nav = [
   { key: 'product', href: lp(lang, '/product/'), label: d.nav.product },
   { key: 'evidence', href: lp(lang, '/evidence/'), label: d.nav.evidence },
+  { key: 'demo', href: lp(lang, '/demo/'), label: d.nav.tryDemo },
   { key: 'for', href: lp(lang, '/for/dentists/'), label: d.nav.solutions },
   { key: 'blog', href: lp(lang, '/blog/'), label: d.nav.blog },
   { key: 'about', href: lp(lang, '/about/'), label: d.nav.about },
@@ -100,6 +101,30 @@ const year = new Date().getFullYear();
           <span class="logo-word light" dir="ltr"><b>DENTAL</b><span>MIND</span></span>
           <p class="foot-tag">{d.meta.tagline}</p>
           <p class="foot-disc">{d.disclaimer}</p>
+          {site.api && (
+            <form
+              class="foot-news"
+              data-api={`${site.api}/v1/newsletter/subscribe`}
+              data-extra={JSON.stringify({ site: 'dentalmind', lang, topics: ['updates'] })}
+              data-msg-sending={d.forms.sending}
+              data-msg-success={d.newsletter.success}
+              data-msg-sent={d.newsletter.sent}
+              data-msg-already={d.newsletter.already}
+              data-msg-email={d.forms.email}
+              data-msg-rate={d.forms.rate}
+              data-msg-error={d.forms.error}
+              data-msg-offline={d.forms.offline}
+            >
+              <label for="news-email" class="foot-head">{d.newsletter.title}</label>
+              <span class="news-text">{d.newsletter.text}</span>
+              <div class="news-row">
+                <input id="news-email" name="email" type="email" required autocomplete="email" dir="ltr" placeholder={d.newsletter.placeholder} />
+                <button class="btn btn-primary btn-sm" type="submit">{d.newsletter.button}</button>
+              </div>
+              <span class="hp" aria-hidden="true"><input name="website" tabindex="-1" autocomplete="off" /></span>
+              <p data-status role="status" hidden></p>
+            </form>
+          )}
         </div>
         <nav aria-label={d.footer.product}>
           <span class="foot-head">{d.footer.product}</span>
@@ -139,6 +164,17 @@ const year = new Date().getFullYear();
         btn.setAttribute('aria-expanded', String(!open));
         nav?.classList.toggle('open', !open);
       });
+    </script>
+    {site.api && (
+      <script is:inline define:vars={{ api: site.api }}>
+        // Cookie-free page view (see the privacy page). Skipped when the browser asks not to be tracked.
+        if (navigator.doNotTrack !== '1' && !navigator.globalPrivacyControl && navigator.sendBeacon) {
+          try { navigator.sendBeacon(api + '/v1/views', JSON.stringify({ site: 'dentalmind', path: location.pathname })); } catch (e) {}
+        }
+      </script>
+    )}
+    <script>
+      import '../scripts/api-form';
     </script>
   </body>
 </html>
@@ -299,6 +335,50 @@ const year = new Date().getFullYear();
   .foot-tag {
     color: #fff;
     margin: 6px 0;
+  }
+  .foot-news {
+    display: grid;
+    gap: 8px;
+    margin-block-start: 18px;
+    max-width: 440px;
+  }
+  .news-text {
+    font-size: 0.85rem;
+    color: #8e9db3;
+  }
+  .news-row {
+    display: flex;
+    gap: 8px;
+  }
+  .news-row input {
+    flex: 1;
+    min-width: 0;
+    font: inherit;
+    color: #fff;
+    background: #0d2547;
+    border: 1px solid #1d3354;
+    border-radius: 999px;
+    padding: 0 16px;
+    min-height: 40px;
+  }
+  .news-row input::placeholder {
+    color: #6f80a0;
+  }
+  .foot-news .hp {
+    position: absolute;
+    inset-inline-start: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+  .foot-news [data-status] {
+    margin: 0;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #8fe0d6;
+  }
+  .foot-news [data-status][data-kind='error'] {
+    color: #f5c76a;
   }
   .foot-disc {
     font-size: 0.82rem;

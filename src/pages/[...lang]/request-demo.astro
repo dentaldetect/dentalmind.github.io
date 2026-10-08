@@ -1,12 +1,14 @@
 ---
 import Page from '../../layouts/Page.astro';
 import { site } from '../../data/site';
-import { t, langPaths, type Lang } from '../../lib/i18n';
+import { t, lp, langPaths, type Lang } from '../../lib/i18n';
 
 export const getStaticPaths = langPaths;
 const { lang } = Astro.props as { lang: Lang };
 const d = t(lang);
 const f = d.demo;
+const m = d.forms;
+const roleIds = ['dentist', 'clinic_manager', 'researcher', 'student', 'other'];
 const issueUrl = `${site.repo}/issues/new?title=${encodeURIComponent(lang === 'fa' ? 'درخواست دمو' : 'Demo request')}`;
 ---
 
@@ -14,23 +16,36 @@ const issueUrl = `${site.repo}/issues/new?title=${encodeURIComponent(lang === 'f
   <section class="section">
     <div class="wrap layout">
       <div class="card form-card">
-        {site.formEndpoint ? (
-          <form action={site.formEndpoint} method="POST">
+        {site.api ? (
+          <form
+            class="demo-form"
+            data-api={`${site.api}/v1/forms/dentalmind/demo`}
+            data-extra={JSON.stringify({ lang })}
+            data-msg-sending={m.sending}
+            data-msg-success={m.demoSuccess}
+            data-msg-email={m.email}
+            data-msg-rate={m.rate}
+            data-msg-invalid={m.invalid}
+            data-msg-error={m.error}
+            data-msg-offline={m.offline}
+          >
             <div class="row">
-              <label>{f.name}<input name="name" required autocomplete="name" /></label>
-              <label>{f.email}<input name="email" type="email" required autocomplete="email" dir="ltr" /></label>
+              <label>{f.name}<input id="d-name" name="name" required autocomplete="name" maxlength="120" /></label>
+              <label>{f.email}<input id="d-email" name="email" type="email" required autocomplete="email" dir="ltr" /></label>
             </div>
             <div class="row">
-              <label>{f.org}<input name="organization" autocomplete="organization" /></label>
-              <label>{f.city}<input name="city" /></label>
+              <label>{f.org}<input id="d-org" name="organization" autocomplete="organization" maxlength="200" /></label>
+              <label>{f.city}<input id="d-city" name="city" maxlength="120" /></label>
             </div>
-            <label>{f.role}
-              <select name="role">{f.roles.map((r) => <option>{r}</option>)}</select>
+            <label>
+              {f.role}
+              <select id="d-role" name="role">{f.roles.map((r, i) => <option value={roleIds[i]}>{r}</option>)}</select>
             </label>
-            <label>{f.message}<textarea name="message" rows="5"></textarea></label>
-            <input type="hidden" name="language" value={lang} />
+            <label>{f.message}<textarea id="d-message" name="message" rows="5" maxlength="4000"></textarea></label>
+            <label class="hp" aria-hidden="true">Website<input name="website" tabindex="-1" autocomplete="off" /></label>
             <p class="muted small">{f.privacy}</p>
-            <button class="btn btn-primary" type="submit">{f.submit}</button>
+            <div><button class="btn btn-primary" type="submit">{f.submit}</button></div>
+            <p data-status role="status" hidden></p>
           </form>
         ) : (
           <div class="fallback">
@@ -41,6 +56,11 @@ const issueUrl = `${site.repo}/issues/new?title=${encodeURIComponent(lang === 'f
         )}
       </div>
       <aside class="side">
+        <div class="card">
+          <h2>{d.xray.title}</h2>
+          <p>{d.xray.subtitle}</p>
+          <a class="btn btn-ghost" href={lp(lang, '/demo/')}>{d.nav.tryDemo}</a>
+        </div>
         <div class="card">
           <h2>{d.home.stepsTitle}</h2>
           <ol>{d.home.steps.map((s) => <li><b>{s.title}.</b> {s.text}</li>)}</ol>
@@ -57,6 +77,10 @@ const issueUrl = `${site.repo}/issues/new?title=${encodeURIComponent(lang === 'f
     </div>
   </section>
 </Page>
+
+<script>
+  import '../../scripts/api-form';
+</script>
 
 <style>
   .layout {
@@ -100,6 +124,35 @@ const issueUrl = `${site.repo}/issues/new?title=${encodeURIComponent(lang === 'f
     border: 1px solid var(--rule);
     border-radius: 10px;
     padding: 10px 12px;
+  }
+  .hp {
+    position: absolute !important;
+    inset-inline-start: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+  [data-status] {
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-weight: 600;
+    margin: 0;
+  }
+  [data-status][data-kind='ok'] {
+    background: var(--ok-bg);
+    color: var(--ok-ink);
+  }
+  [data-status][data-kind='error'] {
+    background: var(--amber-bg);
+    color: var(--amber);
+  }
+  [data-status][data-kind='busy'] {
+    background: var(--surface-2);
+    color: var(--ink-2);
+  }
+  button[disabled] {
+    opacity: 0.6;
+    cursor: wait;
   }
   .fallback p:first-child {
     font-size: 1.05rem;
