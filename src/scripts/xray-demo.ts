@@ -200,7 +200,7 @@ function init(root: HTMLElement) {
       const body = new FormData();
       body.append('file', file);
       body.append('modality', modalitySel.value);
-      const res = await fetch(`${api}/v1/xray/analyze`, { method: 'POST', body });
+      const res = await fetch(`${api}/v1/xray/analyze`, { method: 'POST', body, signal: AbortSignal.timeout(45_000) });
       const data = await res.json().catch(() => ({}));
       if (res.ok && data.result) {
         drawPreview(data.result.overlays ?? []);

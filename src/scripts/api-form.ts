@@ -26,7 +26,12 @@ for (const form of document.querySelectorAll<HTMLFormElement>('form[data-api]'))
     show(form, 'busy', msg.msgSending ?? '…');
     if (button) button.disabled = true;
     try {
-      const res = await fetch(msg.api!, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) });
+      const res = await fetch(msg.api!, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify(body),
+        signal: AbortSignal.timeout(15_000), // a blocked or slow network shows the offline message instead of hanging
+      });
       const data = await res.json().catch(() => ({}));
       if (res.ok) {
         const text = (data.status === 'confirmation_sent' && msg.msgSent) || (data.status === 'already_confirmed' && msg.msgAlready) || msg.msgSuccess || 'OK';
