@@ -27,6 +27,7 @@ const nav = [
   { key: 'evidence', href: lp(lang, '/evidence/'), label: d.nav.evidence },
   { key: 'demo', href: lp(lang, '/demo/'), label: d.nav.tryDemo },
   { key: 'for', href: lp(lang, '/for/dentists/'), label: d.nav.solutions },
+  { key: 'download', href: lp(lang, '/download/'), label: d.nav.download },
   { key: 'blog', href: lp(lang, '/blog/'), label: d.nav.blog },
   { key: 'about', href: lp(lang, '/about/'), label: d.nav.about },
 ];
@@ -132,6 +133,7 @@ const year = new Date().getFullYear();
             <li><a href={lp(lang, '/product/')}>{d.nav.product}</a></li>
             <li><a href={lp(lang, '/evidence/')}>{d.nav.evidence}</a></li>
             <li><a href={lp(lang, '/request-demo/')}>{d.nav.requestDemo}</a></li>
+            <li><a href={lp(lang, '/download/')}>{d.nav.download}</a></li>
             {site.appUrl && <li><a href={site.appUrl}>{d.nav.openApp}</a></li>}
           </ul>
         </nav>

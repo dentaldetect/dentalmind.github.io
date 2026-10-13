@@ -1,0 +1,149 @@
+---
+import QRCode from 'qrcode';
+import Page from '../../layouts/Page.astro';
+import android from '../../data/android.json';
+import { postDate } from '../../lib/blog';
+import { t, langPaths, num, type Lang } from '../../lib/i18n';
+
+export const getStaticPaths = langPaths;
+const { lang } = Astro.props as { lang: Lang };
+const d = t(lang);
+const dl = d.download;
+
+// Built once at build time: the QR always encodes the APK link from android.json.
+const qr = await QRCode.toString(android.url, { type: 'svg', errorCorrectionLevel: 'M', margin: 2, color: { dark: '#071633', light: '#ffffff' } });
+const sizeMb = num(lang, android.sizeBytes / (1024 * 1024), 1);
+// Version strings such as "1.1.0" in the page's digits (Persian: ۱٫۱٫۰).
+const ver = (v: string) => (lang === 'fa' ? v.replace(/\d/g, (c) => '۰۱۲۳۴۵۶۷۸۹'[Number(c)]).replace(/\./g, '٫') : v);
+const facts = [
+  { label: dl.facts.version, value: ver(android.version) },
+  { label: dl.facts.released, value: postDate(lang, new Date(android.released)) },
+  { label: dl.facts.android, value: dl.androidMin(ver(android.minAndroid)) },
+  { label: dl.facts.size, value: lang === 'fa' ? `${sizeMb} مگابایت` : `${sizeMb} MB` },
+];
+---
+
+<Page lang={lang} title={dl.title} subtitle={dl.subtitle} active="download">
+  <section class="section">
+    <div class="wrap dl">
+      <div class="card get">
+        {!android.signInLive && <p class="note" role="note">{dl.notLive}</p>}
+        <a class="btn btn-primary" href={android.url} download>{dl.button}</a>
+        <dl class="facts">
+          {facts.map((f) => (
+            <div><dt>{f.label}</dt><dd dir="auto">{f.value}</dd></div>
+          ))}
+        </dl>
+        <a class="notes" href={android.releasePage} rel="noopener">{dl.releaseNotes}</a>
+      </div>
+
+      <figure class="card qr">
+        <div class="qr-img" set:html={qr} role="img" aria-label={dl.scan} />
+        <figcaption class="muted">{dl.scan}</figcaption>
+      </figure>
+
+      <div class="card wide">
+        <h2>{dl.installTitle}</h2>
+        <ol>{dl.install.map((s) => <li>{s}</li>)}</ol>
+      </div>
+
+      <div class="card wide">
+        <h2>{dl.verifyTitle}</h2>
+        <p class="muted">{dl.verifyText}</p>
+        <p class="hash-label">{dl.fileHash}</p>
+        <code dir="ltr">{android.sha256}</code>
+        <p class="hash-label">{dl.certHash}</p>
+        <code dir="ltr">{android.signingCertSha256}</code>
+      </div>
+
+      <p class="muted disc">{d.disclaimer}</p>
+    </div>
+  </section>
+</Page>
+
+<style>
+  .dl {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 300px);
+    gap: 20px;
+    align-items: start;
+  }
+  .wide,
+  .disc {
+    grid-column: 1 / -1;
+  }
+  .get {
+    display: grid;
+    gap: 18px;
+    justify-items: start;
+  }
+  .note {
+    margin: 0;
+    padding: 12px 14px;
+    border-radius: 10px;
+    background: var(--amber-bg);
+    color: var(--amber);
+    font-weight: 600;
+  }
+  .facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 12px 24px;
+    margin: 0;
+    width: 100%;
+  }
+  .facts dt {
+    color: var(--ink-3);
+    font-size: 0.85rem;
+  }
+  .facts dd {
+    margin: 2px 0 0;
+    font-weight: 700;
+  }
+  .qr {
+    margin: 0;
+    text-align: center;
+  }
+  /* The QR stays dark-on-white in dark mode so phone cameras can read it. */
+  .qr-img {
+    background: #fff;
+    border-radius: 10px;
+    padding: 6px;
+    max-width: 240px;
+    margin-inline: auto;
+  }
+  .qr-img :global(svg) {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .qr figcaption {
+    margin-top: 12px;
+    font-size: 0.95rem;
+  }
+  h2 {
+    font-size: 1.3rem;
+    margin: 0 0 12px;
+  }
+  li {
+    margin-block: 8px;
+    color: var(--ink-2);
+  }
+  .hash-label {
+    margin: 14px 0 4px;
+    font-weight: 600;
+  }
+  code {
+    display: block;
+    overflow-wrap: anywhere;
+    font-size: 0.85rem;
+    padding: 8px 10px;
+    border-radius: 8px;
+    background: var(--surface-2);
+  }
+  @media (max-width: 720px) {
+    .dl {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>
