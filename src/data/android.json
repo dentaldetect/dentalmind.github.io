@@ -1,12 +1,12 @@
 {
-  "version": "1.1.0",
-  "versionCode": 2,
-  "released": "2026-10-13",
+  "version": "1.2.0",
+  "versionCode": 3,
+  "released": "2026-10-16",
   "minAndroid": "8.0",
-  "sizeBytes": 4213944,
-  "url": "https://github.com/dentaldetect/dentalmind.github.io/releases/download/android-v1.1.0/dentalmind-1.1.0.apk",
-  "releasePage": "https://github.com/dentaldetect/dentalmind.github.io/releases/tag/android-v1.1.0",
-  "sha256": "b95f360d64a3fe16d2acdeb1ba296a82d721aee0276eb2a4619c883bc722023a",
+  "sizeBytes": 4238432,
+  "url": "https://github.com/dentaldetect/dentalmind.github.io/releases/download/android-v1.2.0/dentalmind-1.2.0.apk",
+  "releasePage": "https://github.com/dentaldetect/dentalmind.github.io/releases/tag/android-v1.2.0",
+  "sha256": "073ad5a1bb376cf1c0959bcc12b948d7b77a231085f532af6410c032019e5588",
   "signingCertSha256": "E6:C0:DB:0A:E5:5F:0F:DF:FF:55:D5:DA:CE:82:0F:78:AA:A2:56:02:9B:49:7B:40:14:E4:83:57:19:0C:8A:1A",
   "signInLive": false
 }
