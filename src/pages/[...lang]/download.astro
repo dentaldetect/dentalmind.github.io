@@ -1,7 +1,7 @@
 ---
 import QRCode from 'qrcode';
 import Page from '../../layouts/Page.astro';
-import android from '../../data/android.json';
+import data from '../../data/android.json';
 import { postDate } from '../../lib/blog';
 import { t, langPaths, num, type Lang } from '../../lib/i18n';
 
@@ -10,54 +10,90 @@ const { lang } = Astro.props as { lang: Lang };
 const d = t(lang);
 const dl = d.download;
 
-// Built once at build time: the QR always encodes the APK link from android.json.
-const qr = await QRCode.toString(android.url, { type: 'svg', errorCorrectionLevel: 'M', margin: 2, color: { dark: '#071633', light: '#ffffff' } });
-const sizeMb = num(lang, android.sizeBytes / (1024 * 1024), 1);
+/** android.json: `available: false` shows "coming soon" only; with `true` it also needs the release fields. */
+interface AndroidRelease {
+  available: boolean;
+  minAndroid: string;
+  version?: string;
+  versionCode?: number;
+  released?: string;
+  sizeBytes?: number;
+  url?: string;
+  releasePage?: string;
+  sha256?: string;
+  signingCertSha256?: string;
+  signInLive?: boolean;
+}
+const android = data as AndroidRelease;
+
 // Version strings such as "1.1.0" in the page's digits (Persian: ۱٫۱٫۰).
 const ver = (v: string) => (lang === 'fa' ? v.replace(/\d/g, (c) => '۰۱۲۳۴۵۶۷۸۹'[Number(c)]).replace(/\./g, '٫') : v);
-const facts = [
-  { label: dl.facts.version, value: ver(android.version) },
-  { label: dl.facts.released, value: postDate(lang, new Date(android.released)) },
-  { label: dl.facts.android, value: dl.androidMin(ver(android.minAndroid)) },
-  { label: dl.facts.size, value: lang === 'fa' ? `${sizeMb} مگابایت` : `${sizeMb} MB` },
-];
+const requires = { label: dl.facts.android, value: dl.androidMin(ver(android.minAndroid)) };
+
+// Built once at build time: the QR always encodes the APK link from android.json.
+const qr = android.available
+  ? await QRCode.toString(android.url!, { type: 'svg', errorCorrectionLevel: 'M', margin: 2, color: { dark: '#071633', light: '#ffffff' } })
+  : '';
+const sizeMb = android.available ? num(lang, android.sizeBytes! / (1024 * 1024), 1) : '';
+const facts = android.available
+  ? [
+      { label: dl.facts.version, value: ver(android.version!) },
+      { label: dl.facts.released, value: postDate(lang, new Date(android.released!)) },
+      requires,
+      { label: dl.facts.size, value: lang === 'fa' ? `${sizeMb} مگابایت` : `${sizeMb} MB` },
+    ]
+  : [requires];
 ---
 
 <Page lang={lang} title={dl.title} subtitle={dl.subtitle} active="download">
   <section class="section">
-    <div class="wrap dl">
-      <div class="card get">
-        {!android.signInLive && <p class="note" role="note">{dl.notLive}</p>}
-        <a class="btn btn-primary" href={android.url} download>{dl.button}</a>
-        <dl class="facts">
-          {facts.map((f) => (
-            <div><dt>{f.label}</dt><dd dir="auto">{f.value}</dd></div>
-          ))}
-        </dl>
-        <a class="notes" href={android.releasePage} rel="noopener">{dl.releaseNotes}</a>
+    {android.available ? (
+      <div class="wrap dl">
+        <div class="card get">
+          {!android.signInLive && <p class="note" role="note">{dl.notLive}</p>}
+          <a class="btn btn-primary" href={android.url} download>{dl.button}</a>
+          <dl class="facts">
+            {facts.map((f) => (
+              <div><dt>{f.label}</dt><dd dir="auto">{f.value}</dd></div>
+            ))}
+          </dl>
+          <a class="notes" href={android.releasePage} rel="noopener">{dl.releaseNotes}</a>
+        </div>
+
+        <figure class="card qr">
+          <div class="qr-img" set:html={qr} role="img" aria-label={dl.scan} />
+          <figcaption class="muted">{dl.scan}</figcaption>
+        </figure>
+
+        <div class="card wide">
+          <h2>{dl.installTitle}</h2>
+          <ol>{dl.install.map((s) => <li>{s}</li>)}</ol>
+        </div>
+
+        <div class="card wide">
+          <h2>{dl.verifyTitle}</h2>
+          <p class="muted">{dl.verifyText}</p>
+          <p class="hash-label">{dl.fileHash}</p>
+          <code dir="ltr">{android.sha256}</code>
+          <p class="hash-label">{dl.certHash}</p>
+          <code dir="ltr">{android.signingCertSha256}</code>
+        </div>
+
+        <p class="muted disc">{d.disclaimer}</p>
       </div>
-
-      <figure class="card qr">
-        <div class="qr-img" set:html={qr} role="img" aria-label={dl.scan} />
-        <figcaption class="muted">{dl.scan}</figcaption>
-      </figure>
-
-      <div class="card wide">
-        <h2>{dl.installTitle}</h2>
-        <ol>{dl.install.map((s) => <li>{s}</li>)}</ol>
+    ) : (
+      <div class="wrap dl">
+        <div class="card get wide">
+          <p class="note" role="note">{dl.comingSoon}</p>
+          <dl class="facts">
+            {facts.map((f) => (
+              <div><dt>{f.label}</dt><dd dir="auto">{f.value}</dd></div>
+            ))}
+          </dl>
+        </div>
+        <p class="muted disc">{d.disclaimer}</p>
       </div>
-
-      <div class="card wide">
-        <h2>{dl.verifyTitle}</h2>
-        <p class="muted">{dl.verifyText}</p>
-        <p class="hash-label">{dl.fileHash}</p>
-        <code dir="ltr">{android.sha256}</code>
-        <p class="hash-label">{dl.certHash}</p>
-        <code dir="ltr">{android.signingCertSha256}</code>
-      </div>
-
-      <p class="muted disc">{d.disclaimer}</p>
-    </div>
+    )}
   </section>
 </Page>
 

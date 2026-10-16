@@ -197,6 +197,7 @@ export const en = {
     subtitle: 'For patients and dentists: send X-rays, see what your dentist confirmed, and review studies.',
     button: 'Download the APK',
     scan: 'Scan with your phone’s camera to download.',
+    comingSoon: 'The Android app is coming soon. It will be available to download from this page.',
     notLive:
       'Sign-in opens when the DentalMind service launches. You can install the app now; until then signing in and creating an account will not work.',
     facts: { version: 'Version', released: 'Released', android: 'Requires', size: 'Size' },
