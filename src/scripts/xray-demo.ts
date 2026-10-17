@@ -1,4 +1,5 @@
 // X-ray demo: in-browser quality check, then POST to the shared backend (/v1/xray/analyze).
+// The backend answers with the model's contract-v1 result, trimmed to teeth, findings, quality and limitations.
 // Model output is rendered with textContent only; colours and coordinates were validated server-side.
 type Status = 'pass' | 'warn' | 'fail';
 interface Finding { class_name: string; confidence: number; surface?: string }
@@ -11,6 +12,15 @@ interface Cluster {
   prompts?: { options?: { rank: number; text: string }[]; tests?: string[] };
 }
 interface Overlay { tooth: string; x: number; y: number; type: string; color: string }
+interface NBox { x: number; y: number; w: number; h: number }
+interface LiveFinding { code: string; toothFdi: string | null; box: NBox; score: number; decision: 'positive' | 'uncertain' }
+interface LiveResult { quality: { status: string }; findings: LiveFinding[]; limitations: string[] }
+// Box colours per finding code; uncertain areas are drawn grey and dashed.
+const CODE_COLOR: Record<string, string> = {
+  caries: '#F59E0B', deep_caries: '#EF4444', periapical_lesion: '#EF4444', impacted_tooth: '#A78BFA',
+  restoration: '#38BDF8', crown: '#38BDF8', root_canal_treated: '#2DD4BF', implant: '#94A3B8',
+};
+const UNCERTAIN_COLOR = '#9CA3AF';
 type T = Record<string, any>;
 
 const root = document.getElementById('xray-app');
@@ -159,7 +169,7 @@ function init(root: HTMLElement) {
     analyseBtn.hidden = false;
   }
 
-  function drawPreview(overlays: Overlay[]) {
+  function drawPreview(overlays: Overlay[], boxes: LiveFinding[] = []) {
     if (!image) return;
     const maxW = 1400;
     const scale = Math.min(1, maxW / image.naturalWidth);
@@ -184,6 +194,22 @@ function init(root: HTMLElement) {
       ctx.fillStyle = '#071633';
       ctx.fillText(label, x + r * 2.2, y - r * 1.2);
     }
+    // Uncertain first, so positive findings are drawn on top.
+    for (const f of [...boxes].sort((a, b) => (a.decision === 'uncertain' ? 0 : 1) - (b.decision === 'uncertain' ? 0 : 1))) {
+      const color = f.decision === 'positive' ? (CODE_COLOR[f.code] ?? '#F59E0B') : UNCERTAIN_COLOR;
+      const bx = f.box.x * canvas.width, by = f.box.y * canvas.height;
+      ctx.strokeStyle = color;
+      ctx.setLineDash(f.decision === 'positive' ? [] : [r * 0.6, r * 0.4]);
+      ctx.strokeRect(bx, by, f.box.w * canvas.width, f.box.h * canvas.height);
+      ctx.setLineDash([]);
+      if (f.decision === 'positive' && f.toothFdi) {
+        const tw = ctx.measureText(f.toothFdi).width + r;
+        ctx.fillStyle = color;
+        ctx.fillRect(bx, Math.max(0, by - r * 1.6), tw, r * 1.6);
+        ctx.fillStyle = '#071633';
+        ctx.fillText(f.toothFdi, bx + r * 0.5, Math.max(r * 1.2, by - r * 0.4));
+      }
+    }
     previewWrap.hidden = false;
   }
 
@@ -191,6 +217,10 @@ function init(root: HTMLElement) {
     if (!file) return;
     if (!api) {
       say(t.noApi);
+      return;
+    }
+    if (modalitySel.value !== 'panoramic') {
+      say(t.panoOnly, 'error');
       return;
     }
     analyseBtn.disabled = true;
@@ -203,10 +233,15 @@ function init(root: HTMLElement) {
       const res = await fetch(`${api}/v1/xray/analyze`, { method: 'POST', body, signal: AbortSignal.timeout(45_000) });
       const data = await res.json().catch(() => ({}));
       if (res.ok && data.result) {
-        drawPreview(data.result.overlays ?? []);
-        renderClusters(data.result.clusters ?? [], false);
+        const r = data.result as LiveResult;
+        drawPreview([], r.findings ?? []);
+        renderLive(r);
       } else if (data?.error?.code === 'model_not_connected') {
         say(t.notConnected);
+      } else if (data?.error?.code === 'unsupported_modality') {
+        say(t.panoOnly, 'error');
+      } else if (data?.error?.code === 'model_rejected') {
+        say(t.rejected, 'error');
       } else if (res.status === 429) {
         say(t.rate, 'error');
       } else {
@@ -234,6 +269,52 @@ function init(root: HTMLElement) {
     return e;
   };
   const human = (map: Record<string, string>, key: string) => map[key] ?? key.replace(/_/g, ' ');
+
+  // Live answer: positive findings grouped per tooth; uncertain areas listed apart, never as findings.
+  function renderLive(r: LiveResult) {
+    resultsTitle.textContent = t.resultTitle;
+    resultsNote.textContent = t.yourImage;
+    exampleFigure.hidden = true;
+    const toothName = (fdi: string | null) => fdi ?? t.unknownTooth;
+    const line = (f: LiveFinding) => `${human(t.classes, f.code)} · ${nf.format(f.score)} ${t.score}`;
+    const positive = r.findings.filter((f) => f.decision === 'positive');
+    const uncertain = r.findings.filter((f) => f.decision === 'uncertain');
+    const byTooth = new Map<string, LiveFinding[]>();
+    for (const f of positive) byTooth.set(toothName(f.toothFdi), [...(byTooth.get(toothName(f.toothFdi)) ?? []), f]);
+    const nodes: HTMLElement[] = [];
+    if (r.quality.status === 'degraded') nodes.push(el('p', 'muted', t.degraded));
+    if (byTooth.size === 0) nodes.push(el('p', 'muted', t.noFindings));
+    for (const [tooth, list] of [...byTooth].sort(([a], [b]) => a.localeCompare(b))) {
+      const card = el('article', 'cluster card');
+      const head = el('div', 'c-head');
+      const badge = el('span', 'c-tooth', tooth);
+      badge.dir = 'ltr';
+      badge.setAttribute('aria-label', `${t.tooth} ${tooth}`);
+      const titles = el('div');
+      titles.append(el('h3', '', [...new Set(list.map((f) => human(t.classes, f.code)))].join(' · ')));
+      head.append(badge, titles);
+      const fl = el('ul', 'c-findings');
+      for (const f of list) fl.append(el('li', '', line(f)));
+      card.append(head, fl);
+      nodes.push(card);
+    }
+    if (uncertain.length) {
+      const card = el('article', 'cluster card');
+      card.append(el('h3', '', t.uncertainTitle), el('p', 'muted', t.uncertainNote));
+      const ul = el('ul', 'c-findings');
+      for (const f of uncertain) ul.append(el('li', 'muted', `${toothName(f.toothFdi)} · ${line(f)}`));
+      card.append(ul);
+      nodes.push(card);
+    }
+    const notes = r.limitations.map((k) => t.limitations[k]).filter(Boolean);
+    if (notes.length) {
+      const ul = el('ul', 'c-list muted');
+      for (const n of notes) ul.append(el('li', '', n));
+      nodes.push(ul);
+    }
+    clustersBox.replaceChildren(...nodes);
+    results.hidden = false;
+  }
 
   function renderClusters(clusters: Cluster[], isExample: boolean) {
     resultsTitle.textContent = isExample ? t.exampleTitle : t.resultTitle;
