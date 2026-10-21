@@ -1,0 +1,42 @@
+---
+// Interactive 3D dentition (src/dentition/). Renders the chart and details immediately; three.js and the
+// model load afterwards, so the tooth list works even without WebGL.
+import '../dentition/dentition.css';
+import { t, asset, type Lang } from '../lib/i18n';
+
+interface Props {
+  lang: Lang;
+  /** Where the credit's "Model and licence" link points. */
+  licenseHref: string;
+}
+const { lang, licenseHref } = Astro.props;
+const strings = t(lang).dentition;
+---
+
+<div
+  class="dm3d-host"
+  data-dentition
+  data-lang={lang}
+  data-model={asset('/models/dentition/dentition.glb')}
+  data-license={licenseHref}
+  data-strings={JSON.stringify(strings)}
+>
+  <noscript><p class="dm3d-noscript">{strings.noWebgl}</p></noscript>
+</div>
+
+<script>
+  import { mountDentition, type Strings } from '../dentition/app';
+
+  for (const el of document.querySelectorAll<HTMLElement>('[data-dentition]')) {
+    const handle = mountDentition(el, {
+      lang: el.dataset.lang === 'fa' ? 'fa' : 'en',
+      strings: JSON.parse(el.dataset.strings!) as Strings,
+      modelUrl: el.dataset.model!,
+      licenseUrl: el.dataset.license!,
+      initial: new URLSearchParams(location.search).get('tooth'),
+      syncUrl: true,
+    });
+    // For scripts on the page (and tests): select(), setStatus(), setNumbering(), ready.
+    (el as HTMLElement & { dentition?: typeof handle }).dentition = handle;
+  }
+</script>

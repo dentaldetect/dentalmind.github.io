@@ -1,0 +1,95 @@
+---
+import Page from '../../layouts/Page.astro';
+import DentitionViewer from '../../components/DentitionViewer.astro';
+import { TEETH } from '../../dentition/teeth';
+import { t, asset, langPaths, type Lang } from '../../lib/i18n';
+
+export const getStaticPaths = langPaths;
+const { lang } = Astro.props as { lang: Lang };
+const d = t(lang).dentition;
+const rows = [...TEETH].sort((a, b) => a.universal - b.universal);
+---
+
+<Page lang={lang} title={d.title} subtitle={d.subtitle} eyebrow={d.eyebrow} active="dentition">
+  <section class="section viewer-section">
+    <div class="wrap">
+      <DentitionViewer lang={lang} licenseHref="#about-model" />
+    </div>
+  </section>
+
+  <section class="section about-model" id="about-model">
+    <div class="wrap grid-2">
+      <div>
+        <h2>{d.about.title}</h2>
+        {d.about.items.map((p) => <p>{p}</p>)}
+        <p class="files">
+          <a href={asset('/models/dentition/dentition.glb')} download>dentition.glb</a> ·
+          <a href={asset('/models/dentition/teeth.json')}>teeth.json</a> ·
+          <a href={asset('/models/dentition/LICENSE.md')}>LICENSE.md</a>
+        </p>
+      </div>
+      <details class="card numbering">
+        <summary>{d.numbering}: {d.fdi} · {d.universal}</summary>
+        <table>
+          <thead>
+            <tr><th scope="col">{d.fdi}</th><th scope="col">{d.universal}</th><th scope="col">{d.tooth}</th></tr>
+          </thead>
+          <tbody>
+            {rows.map((r) => (
+              <tr>
+                <td class="ltr">{r.fdi}</td>
+                <td class="ltr">{r.universal}</td>
+                <td>{r.name[lang]}{r.geometry === 'placeholder' && <span class="muted"> ({d.placeholderShort})</span>}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </details>
+    </div>
+  </section>
+</Page>
+
+<style>
+  .viewer-section {
+    padding-block: 28px 8px;
+  }
+  .about-model {
+    padding-block: 40px 72px;
+  }
+  .about-model h2 {
+    font-size: 1.5rem;
+    margin-block-end: 12px;
+  }
+  .about-model p {
+    color: var(--ink-2);
+    margin: 0 0 12px;
+  }
+  .files a {
+    font-weight: 600;
+  }
+  .numbering summary {
+    cursor: pointer;
+    font-weight: 700;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+  }
+  .numbering table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    font-size: 0.92rem;
+  }
+  .numbering th,
+  .numbering td {
+    text-align: start;
+    padding: 6px 8px;
+    border-block-end: 1px solid var(--rule);
+  }
+  .numbering td:first-child,
+  .numbering td:nth-child(2) {
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+    width: 4.5em;
+  }
+</style>

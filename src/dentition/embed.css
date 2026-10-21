@@ -1,0 +1,45 @@
+/* Page and tokens for the standalone viewer (the website gets these from global.css). Same palette. */
+:root {
+  --teal: #0ba99a;
+  --teal-600: #08897d;
+  --teal-50: #e7f7f5;
+  --navy: #071633;
+  --bg: #f7fafb;
+  --surface: #ffffff;
+  --surface-2: #eef5f7;
+  --ink: #071633;
+  --ink-2: #44526b;
+  --ink-3: #5f6d84;
+  --rule: #dce7ea;
+  --link: #08897d;
+  --amber: #9a4a07;
+  --amber-bg: #fff4e0;
+  color-scheme: light;
+}
+:root[data-theme='dark'] {
+  --bg: #07131f;
+  --surface: #0e2030;
+  --surface-2: #142b3c;
+  --ink: #edf5f7;
+  --ink-2: #b4c3cc;
+  --ink-3: #93a3ae;
+  --rule: #223747;
+  --link: #4fd8c7;
+  --teal-50: #0d2b2b;
+  --amber: #f5c76a;
+  --amber-bg: #3a2a10;
+  color-scheme: dark;
+}
+html,
+body,
+#app {
+  height: 100%;
+  margin: 0;
+}
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: system-ui, 'Segoe UI', Roboto, 'Noto Sans', 'Noto Sans Arabic', sans-serif;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
+}

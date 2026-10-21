@@ -1,0 +1,6 @@
+# Python 3.12; run build_dentition.py with these installed (a venv is fine).
+numpy>=1.26
+scipy>=1.13
+trimesh>=4.4
+scikit-image>=0.24
+fast-simplification>=0.1.7

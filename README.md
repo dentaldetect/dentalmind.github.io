@@ -27,6 +27,7 @@ npm run preview
 | `src/content/blog/` | Blog posts (English, Markdown). |
 | `src/pages/[...lang]/` | Every page is generated twice: English (no prefix) and Persian (`/fa/`). |
 | `src/components/PanoSketch.astro` | The hero illustration: a schematic panoramic X-ray drawn in SVG (no patient images). |
+| `src/dentition/`, `tools/dentition/`, `public/models/dentition/` | The interactive 3D tooth atlas (`/dentition/`), its model pipeline and assets. See [tools/dentition/README.md](tools/dentition/README.md). The model is CC BY-SA 2.1 JP (BodyParts3D); third molars and gingiva are approximations. |
 
 ## Rules for content
 

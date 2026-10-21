@@ -1,0 +1,518 @@
+{
+  "version": 1,
+  "numbering": "FDI two-digit (ISO 3950), as in DentalMind contract v1; Universal (ADA) given for display",
+  "teeth": [
+    {
+      "fdi": "11",
+      "universal": 8,
+      "quadrant": 1,
+      "position": 1,
+      "type": "central_incisor",
+      "arch": "upper",
+      "side": "right",
+      "name": {
+        "en": "Maxillary right central incisor",
+        "fa": "دندان پیش میانی فک بالا سمت راست"
+      },
+      "geometry": "bodyparts3d",
+      "source": "BodyParts3D 4.3 FMA55681",
+      "node": "tooth_11"
+    },
+    {
+      "fdi": "12",
+      "universal": 7,
+      "quadrant": 1,
+      "position": 2,
+      "type": "lateral_incisor",
+      "arch": "upper",
+      "side": "right",
+      "name": {
+        "en": "Maxillary right lateral incisor",
+        "fa": "دندان پیش کناری فک بالا سمت راست"
+      },
+      "geometry": "bodyparts3d",
+      "source": "BodyParts3D 4.3 FMA55680",
+      "node": "tooth_12"
+    },
+    {
+      "fdi": "13",
+      "universal": 6,
+      "quadrant": 1,
+      "position": 3,
+      "type": "canine",
+      "arch": "upper",
+      "side": "right",
+      "name": {
+        "en": "Maxillary right canine",
+        "fa": "دندان نیش فک بالا سمت راست"
+      },
+      "geometry": "bodyparts3d",
+      "source": "BodyParts3D 4.3 FMA55798",
+      "node": "tooth_13"
+    },
+    {
+      "fdi": "14",
+      "universal": 5,
+      "quadrant": 1,
+      "position": 4,
+      "type": "first_premolar",
+      "arch": "upper",
+      "side": "right",
+      "name": {
+        "en": "Maxillary right first premolar",
+        "fa": "دندان آسیای کوچک اول فک بالا سمت راست"
+      },
+      "geometry": "bodyparts3d",
+      "source": "BodyParts3D 4.3 FMA55689",
+      "node": "tooth_14"
+    },
+    {
+      "fdi": "15",
+      "universal": 4,
+      "quadrant": 1,
+      "position": 5,
+      "type": "second_premolar",
+      "arch": "upper",
+      "side": "right",
+      "name": {
+        "en": "Maxillary right second premolar",
+        "fa": "دندان آسیای کوچک دوم فک بالا سمت راست"
+      },
+      "geometry": "bodyparts3d",
+      "source": "BodyParts3D 4.3 FMA55688",
+      "node": "tooth_15"
+    },
+    {
+      "fdi": "16",
+      "universal": 3,
+      "quadrant": 1,
+      "position": 6,
+      "type": "first_molar",
+      "arch": "upper",
+      "side": "right",
+      "name": {
+        "en": "Maxillary right first molar",
+        "fa": "دندان آسیای بزرگ اول فک بالا سمت راست"
+      },
+      "geometry": "bodyparts3d",
+      "source": "BodyParts3D 4.3 FMA55698",
+      "node": "tooth_16"
+    },
+    {
+      "fdi": "17",
+      "universal": 2,
+      "quadrant": 1,
+      "position": 7,
+      "type": "second_molar",
+      "arch": "upper",
+      "side": "right",
+      "name": {
+        "en": "Maxillary right second molar",
+        "fa": "دندان آسیای بزرگ دوم فک بالا سمت راست"
+      },
+      "geometry": "bodyparts3d",
+      "source": "BodyParts3D 4.3 FMA55697",
+      "node": "tooth_17"
+    },
+    {
+      "fdi": "18",
+      "universal": 1,
+      "quadrant": 1,
+      "position": 8,
+      "type": "third_molar",
+      "arch": "upper",
+      "side": "right",
+      "name": {
+        "en": "Maxillary right third molar (wisdom tooth)",
+        "fa": "دندان آسیای بزرگ سوم (عقل) فک بالا سمت راست"
+      },
+      "geometry": "placeholder",
+      "source": "PLACEHOLDER: BodyParts3D FMA55697 (tooth 17) scaled to Wheeler third-molar averages",
+      "node": "tooth_18"
+    },
+    {
+      "fdi": "21",
+      "universal": 9,
+      "quadrant": 2,
+      "position": 1,
+      "type": "central_incisor",
+      "arch": "upper",
+      "side": "left",
+      "name": {
+        "en": "Maxillary left central incisor",
+        "fa": "دندان پیش میانی فک بالا سمت چپ"
+      },
+      "geometry": "bodyparts3d",
+      "source": "BodyParts3D 4.3 FMA55682",
+      "node": "tooth_21"
+    },
+    {
+      "fdi": "22",
+      "universal": 10,
+      "quadrant": 2,
+      "position": 2,
+      "type": "lateral_incisor",
+      "arch": "upper",
+      "side": "left",
+      "name": {
+        "en": "Maxillary left lateral incisor",
+        "fa": "دندان پیش کناری فک بالا سمت چپ"
+      },
+      "geometry": "bodyparts3d",
+      "source": "BodyParts3D 4.3 FMA55683",
+      "node": "tooth_22"
+    },
+    {
+      "fdi": "23",
+      "universal": 11,
+      "quadrant": 2,
+      "position": 3,
+      "type": "canine",
+      "arch": "upper",
+      "side": "left",
+      "name": {
+        "en": "Maxillary left canine",
+        "fa": "دندان نیش فک بالا سمت چپ"
+      },
+      "geometry": "bodyparts3d",
+      "source": "BodyParts3D 4.3 FMA55799",
+      "node": "tooth_23"
+    },
+    {
+      "fdi": "24",
+      "universal": 12,
+      "quadrant": 2,
+      "position": 4,
+      "type": "first_premolar",
+      "arch": "upper",
+      "side": "left",
+      "name": {
+        "en": "Maxillary left first premolar",
+        "fa": "دندان آسیای کوچک اول فک بالا سمت چپ"
+      },
+      "geometry": "bodyparts3d",
+      "source": "BodyParts3D 4.3 FMA55690",
+      "node": "tooth_24"
+    },
+    {
+      "fdi": "25",
+      "universal": 13,
+      "quadrant": 2,
+      "position": 5,
+      "type": "second_premolar",
+      "arch": "upper",
+      "side": "left",
+      "name": {
+        "en": "Maxillary left second premolar",
+        "fa": "دندان آسیای کوچک دوم فک بالا سمت چپ"
+      },
+      "geometry": "bodyparts3d",
+      "source": "BodyParts3D 4.3 FMA55691",
+      "node": "tooth_25"
+    },
+    {
+      "fdi": "26",
+      "universal": 14,
+      "quadrant": 2,
+      "position": 6,
+      "type": "first_molar",
+      "arch": "upper",
+      "side": "left",
+      "name": {
+        "en": "Maxillary left first molar",
+        "fa": "دندان آسیای بزرگ اول فک بالا سمت چپ"
+      },
+      "geometry": "bodyparts3d",
+      "source": "BodyParts3D 4.3 FMA55699",
+      "node": "tooth_26"
+    },
+    {
+      "fdi": "27",
+      "universal": 15,
+      "quadrant": 2,
+      "position": 7,
+      "type": "second_molar",
+      "arch": "upper",
+      "side": "left",
+      "name": {
+        "en": "Maxillary left second molar",
+        "fa": "دندان آسیای بزرگ دوم فک بالا سمت چپ"
+      },
+      "geometry": "bodyparts3d",
+      "source": "BodyParts3D 4.3 FMA55700",
+      "node": "tooth_27"
+    },
+    {
+      "fdi": "28",
+      "universal": 16,
+      "quadrant": 2,
+      "position": 8,
+      "type": "third_molar",
+      "arch": "upper",
+      "side": "left",
+      "name": {
+        "en": "Maxillary left third molar (wisdom tooth)",
+        "fa": "دندان آسیای بزرگ سوم (عقل) فک بالا سمت چپ"
+      },
+      "geometry": "placeholder",
+      "source": "PLACEHOLDER: BodyParts3D FMA55700 (tooth 27) scaled to Wheeler third-molar averages",
+      "node": "tooth_28"
+    },
+    {
+      "fdi": "31",
+      "universal": 24,
+      "quadrant": 3,
+      "position": 1,
+      "type": "central_incisor",
+      "arch": "lower",
+      "side": "left",
+      "name": {
+        "en": "Mandibular left central incisor",
+        "fa": "دندان پیش میانی فک پایین سمت چپ"
+      },
+      "geometry": "bodyparts3d",
+      "source": "BodyParts3D 4.3 FMA57143",
+      "node": "tooth_31"
+    },
+    {
+      "fdi": "32",
+      "universal": 23,
+      "quadrant": 3,
+      "position": 2,
+      "type": "lateral_incisor",
+      "arch": "lower",
+      "side": "left",
+      "name": {
+        "en": "Mandibular left lateral incisor",
+        "fa": "دندان پیش کناری فک پایین سمت چپ"
+      },
+      "geometry": "bodyparts3d",
+      "source": "BodyParts3D 4.3 FMA57141",
+      "node": "tooth_32"
+    },
+    {
+      "fdi": "33",
+      "universal": 22,
+      "quadrant": 3,
+      "position": 3,
+      "type": "canine",
+      "arch": "lower",
+      "side": "left",
+      "name": {
+        "en": "Mandibular left canine",
+        "fa": "دندان نیش فک پایین سمت چپ"
+      },
+      "geometry": "bodyparts3d",
+      "source": "BodyParts3D 4.3 FMA55687",
+      "node": "tooth_33"
+    },
+    {
+      "fdi": "34",
+      "universal": 21,
+      "quadrant": 3,
+      "position": 4,
+      "type": "first_premolar",
+      "arch": "lower",
+      "side": "left",
+      "name": {
+        "en": "Mandibular left first premolar",
+        "fa": "دندان آسیای کوچک اول فک پایین سمت چپ"
+      },
+      "geometry": "bodyparts3d",
+      "source": "BodyParts3D 4.3 FMA55693",
+      "node": "tooth_34"
+    },
+    {
+      "fdi": "35",
+      "universal": 20,
+      "quadrant": 3,
+      "position": 5,
+      "type": "second_premolar",
+      "arch": "lower",
+      "side": "left",
+      "name": {
+        "en": "Mandibular left second premolar",
+        "fa": "دندان آسیای کوچک دوم فک پایین سمت چپ"
+      },
+      "geometry": "bodyparts3d",
+      "source": "BodyParts3D 4.3 FMA55692",
+      "node": "tooth_35"
+    },
+    {
+      "fdi": "36",
+      "universal": 19,
+      "quadrant": 3,
+      "position": 6,
+      "type": "first_molar",
+      "arch": "lower",
+      "side": "left",
+      "name": {
+        "en": "Mandibular left first molar",
+        "fa": "دندان آسیای بزرگ اول فک پایین سمت چپ"
+      },
+      "geometry": "bodyparts3d",
+      "source": "BodyParts3D 4.3 FMA55704",
+      "node": "tooth_36"
+    },
+    {
+      "fdi": "37",
+      "universal": 18,
+      "quadrant": 3,
+      "position": 7,
+      "type": "second_molar",
+      "arch": "lower",
+      "side": "left",
+      "name": {
+        "en": "Mandibular left second molar",
+        "fa": "دندان آسیای بزرگ دوم فک پایین سمت چپ"
+      },
+      "geometry": "bodyparts3d",
+      "source": "BodyParts3D 4.3 FMA55703",
+      "node": "tooth_37"
+    },
+    {
+      "fdi": "38",
+      "universal": 17,
+      "quadrant": 3,
+      "position": 8,
+      "type": "third_molar",
+      "arch": "lower",
+      "side": "left",
+      "name": {
+        "en": "Mandibular left third molar (wisdom tooth)",
+        "fa": "دندان آسیای بزرگ سوم (عقل) فک پایین سمت چپ"
+      },
+      "geometry": "placeholder",
+      "source": "PLACEHOLDER: BodyParts3D FMA55703 (tooth 37) scaled to Wheeler third-molar averages",
+      "node": "tooth_38"
+    },
+    {
+      "fdi": "41",
+      "universal": 25,
+      "quadrant": 4,
+      "position": 1,
+      "type": "central_incisor",
+      "arch": "lower",
+      "side": "right",
+      "name": {
+        "en": "Mandibular right central incisor",
+        "fa": "دندان پیش میانی فک پایین سمت راست"
+      },
+      "geometry": "bodyparts3d",
+      "source": "BodyParts3D 4.3 FMA57142",
+      "node": "tooth_41"
+    },
+    {
+      "fdi": "42",
+      "universal": 26,
+      "quadrant": 4,
+      "position": 2,
+      "type": "lateral_incisor",
+      "arch": "lower",
+      "side": "right",
+      "name": {
+        "en": "Mandibular right lateral incisor",
+        "fa": "دندان پیش کناری فک پایین سمت راست"
+      },
+      "geometry": "bodyparts3d",
+      "source": "BodyParts3D 4.3 FMA57140",
+      "node": "tooth_42"
+    },
+    {
+      "fdi": "43",
+      "universal": 27,
+      "quadrant": 4,
+      "position": 3,
+      "type": "canine",
+      "arch": "lower",
+      "side": "right",
+      "name": {
+        "en": "Mandibular right canine",
+        "fa": "دندان نیش فک پایین سمت راست"
+      },
+      "geometry": "bodyparts3d",
+      "source": "BodyParts3D 4.3 FMA55686",
+      "node": "tooth_43"
+    },
+    {
+      "fdi": "44",
+      "universal": 28,
+      "quadrant": 4,
+      "position": 4,
+      "type": "first_premolar",
+      "arch": "lower",
+      "side": "right",
+      "name": {
+        "en": "Mandibular right first premolar",
+        "fa": "دندان آسیای کوچک اول فک پایین سمت راست"
+      },
+      "geometry": "bodyparts3d",
+      "source": "BodyParts3D 4.3 FMA55694",
+      "node": "tooth_44"
+    },
+    {
+      "fdi": "45",
+      "universal": 29,
+      "quadrant": 4,
+      "position": 5,
+      "type": "second_premolar",
+      "arch": "lower",
+      "side": "right",
+      "name": {
+        "en": "Mandibular right second premolar",
+        "fa": "دندان آسیای کوچک دوم فک پایین سمت راست"
+      },
+      "geometry": "bodyparts3d",
+      "source": "BodyParts3D 4.3 FMA55695",
+      "node": "tooth_45"
+    },
+    {
+      "fdi": "46",
+      "universal": 30,
+      "quadrant": 4,
+      "position": 6,
+      "type": "first_molar",
+      "arch": "lower",
+      "side": "right",
+      "name": {
+        "en": "Mandibular right first molar",
+        "fa": "دندان آسیای بزرگ اول فک پایین سمت راست"
+      },
+      "geometry": "bodyparts3d",
+      "source": "BodyParts3D 4.3 FMA55705",
+      "node": "tooth_46"
+    },
+    {
+      "fdi": "47",
+      "universal": 31,
+      "quadrant": 4,
+      "position": 7,
+      "type": "second_molar",
+      "arch": "lower",
+      "side": "right",
+      "name": {
+        "en": "Mandibular right second molar",
+        "fa": "دندان آسیای بزرگ دوم فک پایین سمت راست"
+      },
+      "geometry": "bodyparts3d",
+      "source": "BodyParts3D 4.3 FMA55706",
+      "node": "tooth_47"
+    },
+    {
+      "fdi": "48",
+      "universal": 32,
+      "quadrant": 4,
+      "position": 8,
+      "type": "third_molar",
+      "arch": "lower",
+      "side": "right",
+      "name": {
+        "en": "Mandibular right third molar (wisdom tooth)",
+        "fa": "دندان آسیای بزرگ سوم (عقل) فک پایین سمت راست"
+      },
+      "geometry": "placeholder",
+      "source": "PLACEHOLDER: BodyParts3D FMA55706 (tooth 47) scaled to Wheeler third-molar averages",
+      "node": "tooth_48"
+    }
+  ]
+}
