@@ -14,6 +14,7 @@ export const en = {
     requestDemo: 'Request a demo',
     openApp: 'Open the app',
     tryDemo: 'Try the demo',
+    atlas: '3D teeth',
     download: 'Android app',
     menu: 'Menu',
     language: 'فارسی',
@@ -314,6 +315,13 @@ export const en = {
     subtitle:
       'All 32 permanent teeth, numbered the way DentalMind reports findings (FDI). Rotate the model, open the arches, show the roots and select any tooth.',
     nav: '3D tooth atlas',
+    promoEyebrow: 'NEW · INTERACTIVE 3D',
+    promoTitle: 'All 32 teeth, in 3D.',
+    promoText:
+      'Rotate a full adult dentition, open the bite, show the roots and select any tooth to see its FDI number, name, arch and side: the same numbering DentalMind uses for every finding.',
+    promoPoints: ['FDI and Universal numbering', 'Crowns, or crowns and roots', 'Works on phones and in the Android app'],
+    promoButton: 'Open the 3D tooth atlas',
+    promoImageAlt: 'A 3D model of the upper and lower teeth, slightly open, seen from the front right.',
     viewer: 'Interactive 3D model of the 32 permanent teeth',
     help:
       'Drag to rotate, scroll or pinch to zoom, right-drag or drag with two fingers to pan. Left and Right arrows move to the neighbouring tooth, Up and Down to the opposing arch, Enter zooms to the selected tooth, Escape clears the selection. Plus and minus zoom, Shift with the arrows rotates, R resets the view and the keys 1 to 5 choose a view.',

@@ -4,7 +4,7 @@
 
 .dm3d-host {
   --dm-accent: var(--teal, #0ba99a);
-  --dm-accent-strong: #067a6f; /* white text on it: 5.2:1 */
+  --dm-accent-strong: var(--teal-600, #067a6f); /* filled badges with white text: >= 5:1 */
   --dm-accent-ink: var(--link, #08897d);
   --dm-accent-soft: var(--teal-50, #e7f7f5);
   --dm-ink: var(--ink, #071633);
@@ -13,8 +13,8 @@
   --dm-surface: var(--surface, #ffffff);
   --dm-surface-2: var(--surface-2, #eef5f7);
   --dm-rule: var(--rule, #dce7ea);
-  --dm-stage-1: #ffffff;
-  --dm-stage-2: #e6edf0;
+  --dm-stage-1: var(--surface, #ffffff);
+  --dm-stage-2: var(--surface-2, #e6edf0);
   --dm-glass: rgba(255, 255, 255, 0.86);
   --dm-amber-ink: var(--amber, #9a4a07);
   --dm-amber-bg: var(--amber-bg, #fff4e0);
@@ -27,15 +27,7 @@
   color: var(--dm-ink);
   font-family: inherit;
 }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme='light']) .dm3d-host {
-    --dm-stage-1: #1d3049;
-    --dm-stage-2: #0a1525;
-    --dm-glass: rgba(14, 27, 46, 0.86);
-    --dm-accent-soft: #0d2b2b;
-    --dm-red-ink: #ff9b8f;
-  }
-}
+/* The website is light-only; the dark variant is for the app's embed (data-theme='dark'). */
 :root[data-theme='dark'] .dm3d-host {
   --dm-stage-1: #1d3049;
   --dm-stage-2: #0a1525;

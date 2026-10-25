@@ -1,6 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
 import DentalExplorer from '../../components/home/DentalExplorer.astro';
+import AtlasPromo from '../../components/AtlasPromo.astro';
 import Icon from '../../components/home/HomeIcon.astro';
 import styles from '../../components/home/home.module.css';
 import { lp, langPaths, type Lang } from '../../lib/i18n';
@@ -70,6 +71,7 @@ const fa = lang === 'fa';
       <div class={styles.sectionHeading}><p class={styles.eyebrow}>{copy.eyebrow}</p><h2>{copy.heading}</h2><p>{copy.sub}</p></div>
       <div class={styles.featureGrid}>{copy.features.map(([title, body], i) => <article><span class={styles.featureIcon}><Icon name={['layers','scan','file'][i]} size={23}/></span><span class={styles.featureIndex}>0{i + 1}</span><h3>{title}</h3><p>{body}</p></article>)}</div>
     </section>
+    <AtlasPromo lang={lang}/>
     <section id="how-it-works" class={styles.workflow}>
       <div><p class={styles.eyebrow}>{copy.workflow}</p><h2>{copy.workflowTitle}</h2><p>{copy.workflowSub}</p><div class={styles.modalities}>{copy.modalities.map(item => <span>{item}</span>)}</div></div>
       <ol>{copy.steps.map(([title, body], i) => <li><span>0{i + 1}</span><div><h3>{title}</h3><p>{body}</p></div></li>)}</ol>

@@ -1,0 +1,201 @@
+---
+// Link card to the 3D tooth atlas (/dentition/), used on the home and product pages.
+import { t, lp, asset, type Lang } from '../lib/i18n';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const d = t(lang).dentition;
+---
+
+<section class="atlas-promo" aria-labelledby={`atlas-promo-${lang}`}>
+  <div class="inner">
+    <div class="copy">
+      <p class="eyebrow-line"><span class="dot" aria-hidden="true"></span>{d.promoEyebrow}</p>
+      <h2 id={`atlas-promo-${lang}`}>{d.promoTitle}</h2>
+      <p class="text">{d.promoText}</p>
+      <ul>
+        {d.promoPoints.map((p) => (
+          <li>
+            <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="m5 12.5 4.2 4.2L19 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+            {p}
+          </li>
+        ))}
+      </ul>
+      <a class="go" href={lp(lang, '/dentition/')}>
+        {d.promoButton}
+        <svg class="dir" viewBox="0 0 24 24" width="17" height="17" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+      </a>
+    </div>
+    <a class="visual" href={lp(lang, '/dentition/')} tabindex="-1" aria-hidden="true">
+      <img src={asset('/brand/atlas-preview.webp')} alt={d.promoImageAlt} width="960" height="610" loading="lazy" decoding="async" />
+      <span class="badge">3D</span>
+    </a>
+  </div>
+</section>
+
+<style>
+  .atlas-promo {
+    max-width: 1196px;
+    margin: 0 auto 80px;
+    padding-inline: 0;
+  }
+  .inner {
+    display: grid;
+    grid-template-columns: 0.9fr 1.1fr;
+    align-items: center;
+    gap: 40px;
+    padding: 42px 42px 42px 46px;
+    background: linear-gradient(135deg, #eaf0e3, #fcfdf9 70%);
+    border: 1px solid #dbe5d3;
+    border-radius: 14px;
+    overflow: hidden;
+  }
+  .eyebrow-line {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin: 0;
+    font-size: 10px;
+    font-weight: 750;
+    letter-spacing: 0.13em;
+    color: #398071;
+  }
+  .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #2d947a;
+    box-shadow: 0 0 0 4px #2d947a12;
+  }
+  h2 {
+    margin-top: 15px;
+    font-size: clamp(28px, 3vw, 38px);
+    font-weight: 550;
+    line-height: 1.2;
+    letter-spacing: -0.035em;
+  }
+  .text {
+    margin: 16px 0 0;
+    font-size: 14px;
+    line-height: 1.8;
+    color: #65766e;
+    max-width: 470px;
+  }
+  ul {
+    list-style: none;
+    margin: 20px 0 0;
+    padding: 0;
+    display: grid;
+    gap: 8px;
+  }
+  li {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    font-size: 13px;
+    font-weight: 550;
+    color: #4f6457;
+  }
+  li svg {
+    color: #418773;
+    flex-shrink: 0;
+  }
+  .go {
+    margin-top: 28px;
+    display: inline-flex;
+    align-items: center;
+    gap: 13px;
+    padding: 16px 21px;
+    min-height: 48px;
+    border-radius: 8px;
+    background: #246e5e;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 650;
+    transition: background 0.2s, transform 0.2s;
+  }
+  .go:hover {
+    background: #175747;
+    text-decoration: none;
+    transform: translateY(-2px);
+  }
+  .go:focus-visible {
+    outline: 3px solid #168a76;
+    outline-offset: 4px;
+  }
+  :global([dir='rtl']) .dir {
+    transform: rotate(180deg);
+  }
+  .visual {
+    position: relative;
+    display: block;
+    border-radius: 12px;
+  }
+  .visual img {
+    display: block;
+    width: 100%;
+    height: auto;
+    filter: drop-shadow(0 22px 26px rgba(36, 72, 49, 0.14));
+    transition: transform 0.4s ease;
+  }
+  .visual:hover img {
+    transform: scale(1.02) rotate(-0.6deg);
+  }
+  .badge {
+    position: absolute;
+    top: 6px;
+    inset-inline-end: 6px;
+    padding: 4px 9px;
+    border-radius: 6px;
+    background: #102b2d;
+    color: #e3eeea;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+  }
+  :global([dir='rtl']) .eyebrow-line,
+  :global([dir='rtl']) h2 {
+    letter-spacing: normal;
+  }
+  @media (max-width: 1200px) {
+    .atlas-promo {
+      margin-inline: 32px;
+    }
+  }
+  @media (max-width: 860px) {
+    .inner {
+      grid-template-columns: 1fr;
+      gap: 24px;
+      padding: 30px;
+    }
+    .visual {
+      order: -1;
+    }
+  }
+  @media (max-width: 600px) {
+    .atlas-promo {
+      margin: 0 20px 45px;
+    }
+    .inner {
+      padding: 24px 20px;
+    }
+    h2 {
+      font-size: 27px;
+    }
+    .go {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .go,
+    .visual img {
+      transition: none;
+    }
+    .visual:hover img {
+      transform: none;
+    }
+  }
+</style>

@@ -1,6 +1,7 @@
 ---
 import Page from '../../layouts/Page.astro';
 import StatusChip from '../../components/StatusChip.astro';
+import AtlasPromo from '../../components/AtlasPromo.astro';
 import { t, lp, langPaths, num, type Lang } from '../../lib/i18n';
 
 export const getStaticPaths = langPaths;
@@ -47,6 +48,8 @@ const sevClass = (s: string) =>
     </div>
   </section>
 
+  <div class="atlas-wrap"><AtlasPromo lang={lang} /></div>
+
   <section class="section">
     <div class="wrap two">
       <div>
@@ -74,6 +77,9 @@ const sevClass = (s: string) =>
 </Page>
 
 <style>
+  .atlas-wrap {
+    padding-top: 56px;
+  }
   .mods h3,
   .stage h3 {
     font-size: 1.12rem;

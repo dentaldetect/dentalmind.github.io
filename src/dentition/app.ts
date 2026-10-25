@@ -680,6 +680,8 @@ export function mountDentition(root: HTMLElement, opts: DentitionOptions): Denti
         throw err;
       }
       ui.dataset.state = 'ready';
+      const accent = getComputedStyle(root).getPropertyValue('--dm-accent-strong').trim();
+      if (/^#[0-9a-f]{3,8}$/i.test(accent)) scene!.setAccent(accent);
       scene!.setSelected(selected);
       updateLabelsContent();
     };

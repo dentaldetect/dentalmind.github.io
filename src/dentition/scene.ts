@@ -251,6 +251,14 @@ export class DentitionScene {
 
   // ---------------------------------------------------------------------------------------- selection
 
+  /** Selection colour (tint and outline), e.g. the page's brand accent. */
+  setAccent(color: string): void {
+    const c = new THREE.Color(color);
+    for (const t of this.teeth.values()) for (const u of t.uniforms) u.uHighlightColor.value.copy(c);
+    this.outlineMaterials.select.uniforms.uColor.value = c;
+    this.dirty = true;
+  }
+
   setHovered(fdi: Fdi | null): void {
     if (fdi === this.hovered) return;
     this.hovered = fdi;

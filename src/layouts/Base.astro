@@ -26,6 +26,7 @@ const nav = [
   { key: 'product', href: lp(lang, '/product/'), label: d.nav.product },
   { key: 'evidence', href: lp(lang, '/evidence/'), label: d.nav.evidence },
   { key: 'demo', href: lp(lang, '/demo/'), label: d.nav.tryDemo },
+  { key: 'dentition', href: lp(lang, '/dentition/'), label: d.nav.atlas },
   { key: 'for', href: lp(lang, '/for/dentists/'), label: d.nav.solutions },
   { key: 'download', href: lp(lang, '/download/'), label: d.nav.download },
   { key: 'blog', href: lp(lang, '/blog/'), label: d.nav.blog },
@@ -194,7 +195,7 @@ const year = new Date().getFullYear();
   .bar {
     display: flex;
     align-items: center;
-    gap: 24px;
+    gap: 18px;
     min-height: 68px;
   }
   .logo {
@@ -225,18 +226,20 @@ const year = new Date().getFullYear();
   }
   .nav ul {
     display: flex;
-    gap: 4px;
+    gap: 2px;
     list-style: none;
     margin: 0;
     padding: 0;
   }
   .nav a {
     display: block;
-    padding: 8px 12px;
+    padding: 8px 9px;
     border-radius: 999px;
     color: var(--ink-2);
     font-weight: 600;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
+    /* One line per item; below 1040px the menu button takes over. */
+    white-space: nowrap;
   }
   .nav a:hover {
     background: var(--surface-2);
@@ -272,7 +275,7 @@ const year = new Date().getFullYear();
     color: var(--ink);
     cursor: pointer;
   }
-  @media (max-width: 920px) {
+  @media (max-width: 1040px) {
     .menu-btn {
       display: inline-flex;
       align-items: center;

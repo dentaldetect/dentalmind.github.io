@@ -30,6 +30,15 @@
   --amber-bg: #3a2a10;
   color-scheme: dark;
 }
+/* The app keeps its teal brand. */
+.dm3d-host {
+  --dm-accent-strong: #067a6f;
+  --dm-stage-1: #ffffff;
+  --dm-stage-2: #e6edf0;
+}
+:root[data-theme='dark'] .dm3d-host {
+  --dm-accent-strong: #067a6f;
+}
 html,
 body,
 #app {
