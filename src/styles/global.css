@@ -25,7 +25,7 @@
   --gutter: 16px;
   --r: 14px;
   --r-lg: 22px;
-  --shadow: 0 10px 30px rgba(7, 22, 51, 0.07);
+  --shadow: 0 8px 24px rgba(36, 72, 49, 0.035);
   color-scheme: light;
 }
 :root[lang='fa'] {
@@ -61,6 +61,7 @@ a:hover {
 h1,
 h2,
 h3 {
+  font-weight: 600;
   line-height: 1.2;
   margin: 0;
   letter-spacing: -0.02em;
