@@ -1,3 +1,5 @@
+.explorer :where(p) { margin:0; }
+.explorer button { font-family:inherit; line-height:1.4; cursor:pointer; }
 .home { --font-jetbrains-mono: ui-monospace, SFMono-Regular, Consolas, monospace; }
 .home :where(p, ol) { margin: 0; padding: 0; }
 .home :where(ol) { list-style: none; }
@@ -7,10 +9,10 @@
 .home [hidden] { display: none !important; }
 .home svg { flex-shrink: 0; }
 :global([dir="rtl"]) .directional { transform: rotate(180deg); }
-.home { background: #fcfdfb; color: #173732; }
+.home { background: #f6f8f1; color: #173732; }
 .home a, .home button { -webkit-tap-highlight-color: transparent; }
 .home a:focus-visible, .home button:focus-visible { outline: 3px solid #168a76; outline-offset: 5px; }
-.hero { position: relative; background: radial-gradient(ellipse at 80% 26%, #e6f0e5 0%, transparent 54%), #f6f8f1; border-bottom: 1px solid #dce5da; }
+.hero { position: relative; background: #f6f8f1; border-bottom: 1px solid #dce5da; }
 .heroGrid { max-width: 1320px; margin: auto; padding: 76px 32px 52px; display: grid; grid-template-columns: .83fr 1.17fr; align-items: center; gap: 58px; }
 .heroCopy { padding-bottom: 26px; }
 .eyebrow { display: flex; align-items: center; gap: 9px; font-size: 10px; font-weight: 750; letter-spacing: .13em; color: #398071; line-height: 1.8; }
@@ -76,7 +78,7 @@
 .home h2 { font-size: clamp(28px, 3vw, 38px); font-weight: 550; line-height: 1.2; letter-spacing: -.035em; margin-top: 15px; }
 .sectionHeading > p:last-child { font-size: 14px; line-height: 1.8; margin-top: 16px; color: #738073; }
 .featureGrid { display: grid; grid-template-columns: repeat(3, 1fr); margin-top: 40px; border: 1px solid #dfe7dc; border-radius: 12px; overflow: hidden; }
-.featureGrid article { position: relative; padding: 30px; background: #fff; }
+.featureGrid article { position: relative; padding: 30px; background: #fcfdf9; }
 .featureGrid article + article { border-inline-start: 1px solid #dfe7dc; }
 .featureIcon { display: grid; place-items: center; width: 47px; height: 47px; background: #edf4eb; color: #477762; border: 1px solid #e2ebdd; border-radius: 12px; }
 .featureIndex { position: absolute; inset-inline-end: 28px; top: 33px; font: 11px var(--font-jetbrains-mono); color: #8da08c; }

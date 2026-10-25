@@ -1,18 +1,25 @@
 ---
-import Page from '../../layouts/Page.astro';
-import PanoSketch from '../../components/PanoSketch.astro';
+import Base from '../../layouts/Base.astro';
+import Icon from '../../components/home/HomeIcon.astro';
+import DentalExplorer from '../../components/home/DentalExplorer.astro';
 import { site } from '../../data/site';
 import { exampleClusters } from '../../data/example-result';
-import { t, lp, langPaths, type Lang } from '../../lib/i18n';
+import { t, lp, asset, langPaths, type Lang } from '../../lib/i18n';
 
 export const getStaticPaths = langPaths;
 const { lang } = Astro.props as { lang: Lang };
 const d = t(lang);
 const x = d.xray;
+const l = (en: string, fa: string) => lang === "fa" ? fa : en;
 ---
 
-<Page lang={lang} title={x.title} subtitle={x.subtitle} active="demo">
-  <section class="section">
+<Base lang={lang} title={x.title} description={x.subtitle} active="demo">
+  <section class="demo-page">
+    <div class="wrap demo-heading">
+      <div class="crumb"><a href={lp(lang, '/')}>DentalMind</a><span>/</span><span>{l('ANALYSIS WORKSPACE','فضای بررسی تصویر')}</span></div>
+      <div class="heading-row"><div><h1>{l('A clearer view of every tooth.','نمایی روشن‌تر از هر دندان.')}</h1><p>{l('Bring in a radiograph, explore the findings, and keep the next step in perspective.','تصویر رادیوگرافی را انتخاب کنید، یافته‌ها را ببینید و گام بعدی را با آگاهی بیشتری بررسی کنید.')}</p></div><span class="research-badge">{l('Research prototype','نمونه پژوهشی')}</span></div>
+      <ol class="workflow"><li><b>01</b>{l('Select an image','انتخاب تصویر')}</li><li><b>02</b>{l('Explore findings','بررسی یافته‌ها')}</li><li><b>03</b>{l('Clinical review','بازبینی بالینی')}</li></ol>
+    </div>
     <div
       class="wrap demo"
       id="xray-app"
@@ -23,6 +30,7 @@ const x = d.xray;
     >
       <div class="col-input">
         <div class="card">
+          <h2 class="input-title"><Icon name="scan" size={16}/>{l('Start with an image','با یک تصویر شروع کنید')}</h2>
           <label class="field" for="xr-modality">
             {x.modality}
             <select id="xr-modality">
@@ -54,6 +62,11 @@ const x = d.xray;
       </div>
 
       <div class="col-output">
+        <div id="xr-empty" class="empty-state">
+          <div class="empty-image"><img src={asset('/brand/dental-panorama-synthetic.png')} width="1672" height="941" alt={l('Synthetic panoramic illustration used to preview the workspace','تصویر پانورامیک تولیدشده برای پیش‌نمایش فضای بررسی')} fetchpriority="high"/><span>{l('ILLUSTRATIVE IMAGE · NOT A RESULT','تصویر آموزشی · پیش‌نمایش')}</span></div>
+          <h2>{l('Your image. The details in focus.','تصویر شما، با جزئیاتی روشن‌تر.')}</h2><p>{l('Choose the example to explore a tooth-by-tooth review, or upload an image to begin.','نمونه آموزشی را برای بررسی یافته‌های هر دندان انتخاب کنید یا تصویر خود را بارگذاری کنید.')}</p>
+          <button id="xr-empty-example" type="button" class="example-link">{x.showExample} <span aria-hidden="true">{lang === 'fa' ? '←' : '→'}</span></button>
+        </div>
         <figure id="xr-preview" class="preview" hidden>
           <canvas id="xr-canvas" dir="ltr" aria-label={x.yourImage}></canvas>
         </figure>
@@ -62,7 +75,7 @@ const x = d.xray;
           <h2 id="xr-results-title" class="h3"></h2>
           <p id="xr-results-note" class="muted small"></p>
           <div id="xr-example-figure" hidden>
-            <PanoSketch lang={lang} />
+            <DentalExplorer lang={lang} />
           </div>
           <div id="xr-clusters" class="clusters"></div>
           <a class="btn btn-ghost" href={lp(lang, '/request-demo/')}>{d.nav.requestDemo}</a>
@@ -70,7 +83,7 @@ const x = d.xray;
       </div>
     </div>
   </section>
-</Page>
+</Base>
 
 <script>
   import '../../scripts/xray-demo';
@@ -289,4 +302,49 @@ const x = d.xray;
     color: var(--ink-2);
     font-size: 0.93rem;
   }
+</style>
+
+<style>
+  .demo-page { background:var(--bg); padding:36px 0 64px; }
+  .demo-heading { margin-bottom:28px; }
+  .crumb { display:flex; gap:10px; color:var(--ink-3); font-size:10px; letter-spacing:.08em; }
+  .heading-row { display:flex; align-items:center; justify-content:space-between; gap:24px; margin:25px 0 30px; }
+  .heading-row h1 { font-size:clamp(30px,3.5vw,46px); font-weight:600; letter-spacing:-.04em; }
+  .heading-row p { font-size:13px; color:var(--ink-3); line-height:1.85; max-width:590px; margin:13px 0 0; }
+  .research-badge { white-space:nowrap; border:1px solid var(--rule); padding:7px 10px; border-radius:6px; color:var(--teal); font-size:10px; }
+  .workflow { display:flex; gap:36px; list-style:none; margin:0; padding:17px 0; border-block:1px solid var(--rule); }
+  .workflow li { display:flex; align-items:center; gap:9px; font-size:11px; color:var(--ink-3); }
+  .workflow b { font-size:9px; color:var(--teal); }
+  .demo { grid-template-columns:310px minmax(0,1fr); gap:24px; }
+  .col-input .card { padding:19px; box-shadow:none; gap:16px; }
+  .input-title { display:flex; align-items:center; gap:8px; font-size:13px; font-weight:600; }
+  .field { font-size:10px; color:var(--ink-3); }
+  select { font-size:12px; }
+  .drop { padding:30px 14px; border-width:1px; background:#f2f5ed; }
+  .drop-main { font-size:12px; font-weight:600; }
+  .drop .muted { font-size:10px; }
+  .small { font-size:10px; line-height:1.85; }
+  .notice,.message,.verdict { font-size:11px; line-height:1.8; }
+  .actions { display:grid; }
+  .actions .btn { font-size:12px; min-height:42px; padding:9px 12px; border-radius:7px; }
+  .col-input > p { margin-top:16px; }
+  .empty-state { min-height:490px; background:var(--surface); border:1px solid var(--rule); border-radius:13px; padding:28px; text-align:center; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+  .empty-image { position:relative; width:min(100%,530px); border-radius:10px; overflow:hidden; margin-bottom:28px; }
+  .empty-image img { display:block; width:100%; height:auto; }
+  .empty-image > span { position:absolute; bottom:10px; inset-inline-start:10px; color:#e8ede5; background:#12332bc9; padding:4px 7px; font-size:8px; border-radius:4px; }
+  .empty-state h2 { font-size:22px; font-weight:550; }
+  .empty-state p { max-width:410px; color:var(--ink-3); font-size:12px; line-height:1.85; margin:12px 0 18px; }
+  .example-link { display:flex; align-items:center; gap:9px; font:inherit; font-size:12px; font-weight:600; border:0; background:transparent; color:var(--teal); cursor:pointer; padding:8px; }
+  .results { gap:16px; }
+  .results .h3 { font-weight:600; }
+  .clusters :global(.cluster) { box-shadow:none; padding:20px; }
+  .clusters :global(.c-tooth) { background:#e6efdd; color:var(--teal); }
+  .clusters :global(.c-findings), .clusters :global(.c-list) { font-size:12px; line-height:1.9; }
+  .clusters :global(h3) { font-size:15px; font-weight:600; }
+  .clusters :global(h4) { font-size:10px; }
+  .checks :global(li) { font-size:11px; }
+  .preview { border:1px solid var(--rule); border-radius:12px; overflow:hidden; }
+  :global([dir="rtl"]) .heading-row h1 { letter-spacing:0; }
+  @media(max-width:900px) { .demo { grid-template-columns:270px minmax(0,1fr); gap:18px; } }
+  @media(max-width:700px) { .demo { grid-template-columns:1fr; } .heading-row { align-items:flex-start; flex-direction:column; gap:14px; } .empty-state { min-height:370px; padding:20px; } .workflow { gap:23px; } .workflow li { font-size:10px; } }
 </style>

@@ -1,18 +1,18 @@
 /* DentalMind brand: teal on deep navy, from the existing dentalmind-web palette. */
 :root {
-  --teal: #0ba99a;
-  --teal-600: #08897d;
-  --teal-50: #e7f7f5;
-  --navy: #071633;
-  --navy-2: #0d2547;
-  --bg: #f8fbfc;
-  --surface: #ffffff;
-  --surface-2: #eef5f7;
-  --ink: #071633;
-  --ink-2: #44526b;
-  --ink-3: #66748b;
-  --rule: #dce7ea;
-  --link: #08897d;
+  --teal: #246e5e;
+  --teal-600: #246e5e;
+  --teal-50: #edf2e6;
+  --navy: #173732;
+  --navy-2: #23483b;
+  --bg: #f6f8f1;
+  --surface: #fcfdf9;
+  --surface-2: #eef3e7;
+  --ink: #173732;
+  --ink-2: #5f735e;
+  --ink-3: #718075;
+  --rule: #dbe3d5;
+  --link: #246e5e;
   --amber: #b45309;
   --amber-bg: #fff4e0;
   --ok-bg: #e3f6ec;
@@ -32,27 +32,6 @@
   --font: 'Vazirmatn Variable', Vazirmatn, Tahoma, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme='light']) {
-    --bg: #07111f;
-    --surface: #0e1b2e;
-    --surface-2: #13233a;
-    --ink: #e8eef6;
-    --ink-2: #b5c1d1;
-    --ink-3: #8a97aa;
-    --rule: #22334b;
-    --link: #3fd1c1;
-    --teal-50: #0d2b2b;
-    --amber: #f5b45a;
-    --amber-bg: #3a2a10;
-    --ok-bg: #12301f;
-    --ok-ink: #8fe0b2;
-    --gray-bg: #1c2a3e;
-    --gray-ink: #c3cbd6;
-    --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
-    color-scheme: dark;
-  }
-}
 
 *,
 *::before,
@@ -128,11 +107,6 @@ h3 {
   letter-spacing: 0;
   font-size: 0.9rem;
 }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme='light']) .eyebrow {
-    color: var(--teal);
-  }
-}
 
 .btn {
   display: inline-flex;
@@ -141,8 +115,8 @@ h3 {
   gap: 8px;
   min-height: 46px;
   padding: 0 22px;
-  border-radius: 999px;
-  font-weight: 700;
+  border-radius: 8px;
+  font-weight: 600;
   font-family: inherit;
   font-size: 0.98rem;
   border: 1.5px solid transparent;
@@ -156,7 +130,7 @@ h3 {
 .btn-primary {
   background: var(--teal);
   color: #fff;
-  box-shadow: 0 10px 26px rgba(11, 169, 154, 0.28);
+  box-shadow: 0 5px 15px rgba(36, 110, 94, 0.12);
 }
 .btn-ghost {
   border-color: var(--rule);

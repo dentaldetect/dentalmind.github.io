@@ -50,6 +50,7 @@ function init(root: HTMLElement) {
   const resultsNote = $('#xr-results-note');
   const clustersBox = $('#xr-clusters');
   const exampleFigure = $('#xr-example-figure');
+  const emptyState = $('#xr-empty');
 
   let file: File | null = null;
   let image: HTMLImageElement | null = null;
@@ -71,6 +72,7 @@ function init(root: HTMLElement) {
   });
   modalitySel.addEventListener('change', () => file && image && runChecks());
   exampleBtn.addEventListener('click', showExample);
+  $('#xr-empty-example').addEventListener('click', showExample);
   analyseBtn.addEventListener('click', analyse);
 
   async function load(f: File) {
@@ -145,6 +147,7 @@ function init(root: HTMLElement) {
       drawPreview([]);
     } else {
       previewWrap.hidden = true;
+      emptyState.hidden = false;
     }
     checksList.replaceChildren(
       ...rows.map(([key, st]) => {
@@ -211,6 +214,7 @@ function init(root: HTMLElement) {
       }
     }
     previewWrap.hidden = false;
+    emptyState.hidden = true;
   }
 
   async function analyse() {
@@ -256,6 +260,7 @@ function init(root: HTMLElement) {
   }
 
   function showExample() {
+    emptyState.hidden = true;
     previewWrap.hidden = true; // the example is not about the user's image
     renderClusters(example, true);
     results.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });

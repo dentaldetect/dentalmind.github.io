@@ -46,7 +46,7 @@ const year = new Date().getFullYear();
     <link rel="alternate" hreflang={otherLang} href={new URL(other, Astro.site)} />
     <link rel="icon" type="image/svg+xml" href={asset('/favicon.svg')} />
     <link rel="sitemap" href={asset('/sitemap-index.xml')} />
-    <meta name="theme-color" content="#071633" />
+    <meta name="theme-color" content="#f6f8f1" />
     <meta property="og:site_name" content={name} />
     <meta property="og:type" content="website" />
     <meta property="og:title" content={title ?? name} />
@@ -99,7 +99,7 @@ const year = new Date().getFullYear();
     <footer class="site-footer">
       <div class="wrap foot-grid">
         <div>
-          <span class="logo-word light" dir="ltr"><b>DENTAL</b><span>MIND</span></span>
+          <span class="logo-word" dir="ltr"><b>DENTAL</b><span>MIND</span></span>
           <p class="foot-tag">{d.meta.tagline}</p>
           <p class="foot-disc">{d.disclaimer}</p>
           {site.api && (
@@ -187,7 +187,7 @@ const year = new Date().getFullYear();
     position: sticky;
     top: 0;
     z-index: 50;
-    background: color-mix(in srgb, var(--surface) 88%, transparent);
+    background: var(--bg);
     backdrop-filter: saturate(1.4) blur(10px);
     border-block-end: 1px solid var(--rule);
   }
@@ -314,13 +314,14 @@ const year = new Date().getFullYear();
   }
 
   .site-footer {
-    background: var(--navy);
-    color: #b6c3d6;
+    background: var(--bg);
+    border-block-start: 1px solid var(--rule);
+    color: var(--ink-2);
     padding-block: 48px 20px;
     font-size: 0.92rem;
   }
   .site-footer a {
-    color: #e4ecf7;
+    color: var(--ink-2);
   }
   .foot-grid {
     display: grid;
@@ -336,7 +337,7 @@ const year = new Date().getFullYear();
     }
   }
   .foot-tag {
-    color: #fff;
+    color: var(--ink);
     margin: 6px 0;
   }
   .foot-news {
@@ -347,7 +348,7 @@ const year = new Date().getFullYear();
   }
   .news-text {
     font-size: 0.85rem;
-    color: #8e9db3;
+    color: var(--ink-3);
   }
   .news-row {
     display: flex;
@@ -357,15 +358,15 @@ const year = new Date().getFullYear();
     flex: 1;
     min-width: 0;
     font: inherit;
-    color: #fff;
-    background: #0d2547;
-    border: 1px solid #1d3354;
+    color: var(--ink);
+    background: var(--surface);
+    border: 1px solid var(--rule);
     border-radius: 999px;
     padding: 0 16px;
     min-height: 40px;
   }
   .news-row input::placeholder {
-    color: #6f80a0;
+    color: var(--ink-3);
   }
   .foot-news .hp {
     position: absolute;
@@ -378,19 +379,19 @@ const year = new Date().getFullYear();
     margin: 0;
     font-size: 0.85rem;
     font-weight: 600;
-    color: #8fe0d6;
+    color: var(--teal);
   }
   .foot-news [data-status][data-kind='error'] {
-    color: #f5c76a;
+    color: var(--amber);
   }
   .foot-disc {
     font-size: 0.82rem;
-    color: #8e9db3;
+    color: var(--ink-3);
     max-width: 440px;
   }
   .foot-head {
     display: block;
-    color: #fff;
+    color: var(--ink);
     font-weight: 700;
     margin-block-end: 8px;
   }
@@ -401,10 +402,10 @@ const year = new Date().getFullYear();
     line-height: 2.1;
   }
   .foot-bottom {
-    border-block-start: 1px solid #1d3354;
+    border-block-start: 1px solid var(--rule);
     margin-block-start: 32px;
     padding-block-start: 14px;
     font-size: 0.82rem;
-    color: #8e9db3;
+    color: var(--ink-3);
   }
 </style>

@@ -27,13 +27,13 @@ const { lang, title, subtitle, eyebrow, active, description } = Astro.props;
 
 <style>
   .page-head {
-    background: radial-gradient(circle at 85% 0%, rgba(11, 169, 154, 0.13), transparent 55%);
+    background: var(--bg);
     padding-block: 56px 40px;
     border-block-end: 1px solid var(--rule);
   }
   h1 {
     font-size: clamp(2rem, 4.5vw, 3rem);
-    font-weight: 800;
+    font-weight: 600;
   }
   p {
     color: var(--ink-2);
