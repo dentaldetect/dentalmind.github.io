@@ -1,0 +1,56 @@
+---
+import { asset, type Lang } from '../../lib/i18n';
+import { dentalFindings } from './dental-findings';
+import Icon from './HomeIcon.astro';
+import styles from './home.module.css';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const language = lang === 'fa' ? 1 : 0;
+const label = (en: string, fa: string) => language ? fa : en;
+const finding = dentalFindings[0];
+---
+<div id="dental-explorer" data-dental-explorer data-play={label('Play guided tour', 'شروع نمایش خودکار')} data-pause={label('Pause guided tour', 'توقف نمایش خودکار')} data-tooth={label('TOOTH', 'دندان')} data-selected={label('SELECTED', 'انتخاب‌شده')} class={styles.explorer} style={`--finding-color:${finding.color}`}>
+  <div class={styles.viewer}>
+    <div class={styles.viewerHeader}>
+      <div><span class={styles.viewerIcon}><Icon name="scan" size={17}/></span><div><strong>{label('The tooth-by-tooth view','نمای دندان‌به‌دندان')}</strong><span>{label('INTERACTIVE IMAGE','تصویر تعاملی')}</span></div></div>
+      <span class={styles.sampleBadge}>{label('Synthetic case','نمونه آموزشی')}</span>
+    </div>
+    <div class={styles.viewerToolbar}><span>{label('PANORAMIC VIEW / FDI','نمای پانورامیک / FDI')}</span><div>
+      <button type="button" data-annotations aria-pressed="true" aria-label={label('Show annotations','نمایش نشانه‌ها')}><Icon name="eye" size={14}/><span>{label('Annotations','نشانه‌ها')}</span></button>
+      <button type="button" data-tour aria-pressed="false" aria-label={label('Play guided tour','شروع نمایش خودکار')}><span data-play-icon><Icon name="play" size={14}/></span><span data-pause-icon hidden><Icon name="pause" size={14}/></span></button>
+    </div></div>
+    <div class={styles.anatomy}>
+      <img src={asset('/brand/dental-panorama-synthetic.png')} alt={label('AI-generated panoramic dental image with illustrative decay, an impacted wisdom tooth, and root canal treatment. Not a patient scan.','تصویر پانورامیک تولیدشده با هوش مصنوعی با پوسیدگی نمونه، دندان عقل نهفته و درمان ریشه؛ نه تصویر بیمار.')} width="1672" height="941" fetchpriority="high" decoding="async" />
+      <svg viewBox="0 0 680 382.7" role="group" aria-labelledby="dental-image-title dental-image-desc" dir="ltr">
+        <title id="dental-image-title">{label('Synthetic panoramic image with five selectable review areas','تصویر پانورامیک تولیدشده با پنج ناحیه نمونه برای بررسی')}</title>
+        <desc id="dental-image-desc">{label('AI-generated radiograph-style illustration, not a patient X-ray. Select a finding below to explore.','تصویر تولیدشده با هوش مصنوعی؛ نه رادیوگرافی بیمار. یک یافته را برای بررسی انتخاب کنید.')}</desc>
+        <defs><linearGradient id="dental-scan"><stop stop-color="#67e4ce" stop-opacity="0"/><stop offset="1" stop-color="#67e4ce" stop-opacity=".13"/></linearGradient></defs>
+        <text x="18" y="193" fill="#c1d4cc" font-size="10">R</text><text x="654" y="193" fill="#c1d4cc" font-size="10">L</text>
+        <g data-scan class={styles.scanSweep} hidden pointer-events="none"><rect x="0" y="0" width="50" height="383" fill="url(#dental-scan)"/><path d="M50 0V383" stroke="#67e4ce" stroke-opacity=".3"/></g>
+        <g data-overlay>
+          {dentalFindings.map((item, index) => <g data-marker data-index={index} data-tooth={item.tooth} data-x={item.x} data-y={item.y} data-color={item.color} role="button" tabindex="0" aria-label={`${label('Tooth','دندان')} ${item.tooth}: ${item.label[language]}`} aria-pressed={index === 0 ? 'true' : 'false'} class={styles.toothTarget}>
+            <circle cx={item.x} cy={item.y} r="24" fill="transparent"/>
+            <circle data-ring cx={item.x} cy={item.y} r={index === 0 ? 25 : 19} fill={item.color} fill-opacity={index === 0 ? '.08' : '.02'} stroke={item.color} stroke-width={index === 0 ? 1.5 : 1} stroke-opacity={index === 0 ? '.9' : '.5'} stroke-dasharray={index === 0 ? undefined : '3 4'}/>
+            <circle cx={item.x + 17} cy={item.y - 17} r="5" fill={item.color} stroke="#10292b" stroke-width="2"/>
+          </g>)}
+          <g pointer-events="none"><path data-leader d="M214 129V38H238" fill="none" stroke={finding.color} stroke-width="1" opacity=".65"/><rect data-label-box x="171" y="24" width="134" height="26" rx="13" fill="#143436" stroke={finding.color} stroke-opacity=".45"/><text data-label x="238" y="41" text-anchor="middle" fill={finding.color} font-size="11" font-family="sans-serif">{label('TOOTH','دندان')} 16 · {label('SELECTED','انتخاب‌شده')}</text></g>
+        </g>
+      </svg>
+    </div>
+    <div class={styles.viewerFooter}><span><i/>{label('5 example findings','۵ یافته نمونه')}</span><span>{label('Select a marker to explore','برای بررسی یک نشانه را انتخاب کنید')}</span></div>
+  </div>
+  <div class={styles.findingSelector} role="group" aria-label={label('Example findings','یافته‌های نمونه')}>
+    {dentalFindings.map((item, index) => <button type="button" data-finding data-index={index} aria-pressed={index === 0 ? 'true' : 'false'} style={`--chip-color:${item.color}`}><span>{item.tooth}</span>{item.label[language]}</button>)}
+  </div>
+  <div data-details aria-live="polite" aria-atomic="true">
+    {dentalFindings.map((item, index) => <div data-detail data-index={index} class={styles.findingDetail} hidden={index !== 0}>
+      <div class={styles.detailTitle}><span class={styles.toothNumber}>{item.tooth}</span><div><span>{item.category[language]}</span><h3>{item.label[language]}</h3></div></div>
+      <p class={styles.findingDescription}>{item.description[language]}</p>
+      <div class={styles.reviewSteps}><div><span>01 / {label('REVIEW','بررسی')}</span><p>{item.review[language]}</p></div><div><span>02 / {label('PLAN','برنامه')}</span><p>{item.plan[language]}</p></div></div>
+    </div>)}
+  </div>
+  <p class={styles.illustrationNote}>{label('AI-generated image · Illustrative findings · Not a patient scan or diagnosis.','تصویر تولیدشده با هوش مصنوعی · یافته‌های نمونه · نه اسکن بیمار یا تشخیص.')}</p>
+</div>
+<script>
+  import '../../scripts/dental-explorer';
+</script>

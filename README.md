@@ -26,7 +26,9 @@ npm run preview
 | `src/data/site.ts` | Repo URL, optional app URL, optional demo-form endpoint, links to the Iranian Healthcare site. |
 | `src/content/blog/` | Blog posts (English, Markdown). |
 | `src/pages/[...lang]/` | Every page is generated twice: English (no prefix) and Persian (`/fa/`). |
-| `src/components/PanoSketch.astro` | The hero illustration: a schematic panoramic X-ray drawn in SVG (no patient images). |
+| `src/components/home/`, `src/scripts/dental-explorer.ts` | The redesigned homepage and interactive synthetic panoramic image; findings, guided tour, annotations and bilingual review context. |
+| `public/brand/dental-panorama-synthetic.png`, `docs/homepage-image-plan.md` | Generated hero asset, generation prompt and plan for clinician-verified real cases. |
+| `src/components/PanoSketch.astro` | The schematic illustration used by the separate demo page. |
 | `src/dentition/`, `tools/dentition/`, `public/models/dentition/` | The interactive 3D tooth atlas (`/dentition/`), its model pipeline and assets. See [tools/dentition/README.md](tools/dentition/README.md). The model is CC BY-SA 2.1 JP (BodyParts3D); third molars and gingiva are approximations. |
 
 ## Rules for content
