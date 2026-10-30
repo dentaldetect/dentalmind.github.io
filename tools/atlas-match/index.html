@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>DentalMind · X-ray to atlas</title></head>
+<body>
+  <main>
+    <header><span class="eyebrow">DentalMind / Atlas research</span><h1>Follow a tooth from X-ray to atlas.</h1><p>Inspect a 2D observation beside reference anatomy. Select a tooth in either view to follow the link.</p></header>
+    <section class="actions" aria-label="Study controls">
+      <label class="button primary">Open dental X-ray<input id="image-file" type="file" accept="image/png,image/jpeg,image/webp" hidden></label>
+      <label class="modality-label">View <select id="modality"><option value="panoramic">Panoramic</option><option value="bitewing">Bitewing</option><option value="periapical">Periapical</option><option value="occlusal">Occlusal</option><option value="cephalometric">Cephalometric</option><option value="cbct_slice">CBCT slice</option></select></label>
+      <button id="analyze" disabled>Detect &amp; link teeth</button>
+      <button id="presence" disabled>Suggest visible teeth</button>
+      <label class="button">Load atlas report<input id="report-file" type="file" accept="application/json" hidden></label>
+      <button id="download" disabled>Save report</button>
+      <button id="example" hidden>Open research example</button>
+      <span id="status" role="status">Open an image to begin.</span>
+    </section>
+    <section class="condition-controls" aria-label="Condition visualization">
+      <div class="condition-heading"><div><h2>See findings on the atlas</h2><p>Illustrative appearance on reference anatomy. Lesion location, depth and size are not measured. Internal root and canal details appear only with “Show roots” in the 3D display options.</p></div><label class="layer-toggle"><input id="show-conditions" type="checkbox" checked> Show condition effects</label></div>
+      <p id="condition-summary" role="status">Upload a panoramic image and detect teeth to include available 2D finding models, or try a manual simulation.</p>
+      <div class="simulation-tools"><label>Tooth <select id="simulation-tooth"><option value="">Select a tooth</option></select></label><label>Manual example <select id="simulation-kind"><option value="caries">Caries</option><option value="fracture">Chipped / fractured crown</option><option value="periapical">Periapical finding</option><option value="restoration">Restoration</option><option value="root_canal">Root canal treated</option><option value="missing">Missing tooth</option></select></label><button id="apply-simulation" disabled>Apply manual example</button><button id="clear-simulation" disabled>Clear this tooth’s examples</button><button id="clear-all-simulations" disabled>Clear all examples</button></div>
+      <div id="condition-inspector" aria-live="polite">Select a tooth to inspect its detected findings and manual examples.</div>
+      <p class="condition-legend"><span>AI findings: awaiting review</span><span>Manual examples: simulated, not detected</span><span>Unmarked teeth: status unknown</span></p>
+    </section>
+    <div class="workspace">
+      <section class="panel image-panel"><div class="panel-heading"><h2>Source X-ray</h2><span id="match-count">No linked observations</span></div><div id="image-stage"><div class="empty">Your dental X-ray stays here.<br><small>Each modality uses its own configured model. Full-mouth series and CBCT landmark registration are available through the API.</small></div></div><div id="observations" class="observations" aria-label="Linked observations"></div></section>
+      <section class="panel atlas-panel"><div class="panel-heading"><h2>3D reference atlas</h2><span id="atlas-health-state">Health unassessed · run finding analysis</span></div><div class="atlas-evidence-legend">Amber !: AI finding · Blue ?: uncertain · Purple S: simulation. Unmarked teeth are unassessed.</div><div id="atlas-finding-shortcuts" aria-label="Findings linked to atlas teeth"></div><div id="atlas"></div></section>
+    </div>
+    <aside class="scope"><strong>Reference anatomy, with uncertainty visible.</strong><span>This is atlas matching, not a patient-specific 3D reconstruction. Depth, root shape and lesion surface location are not recovered from this image. Third molars use placeholder geometry. Findings remain 2D observations awaiting review.</span></aside>
+    <section id="selection" class="selection" aria-live="polite">Select a linked tooth to inspect its correspondence.</section>
+  </main>
+  <script type="module" src="./main.ts"></script>
+</body></html>

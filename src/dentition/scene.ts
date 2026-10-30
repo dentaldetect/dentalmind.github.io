@@ -9,6 +9,7 @@ import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import type { Arch, Fdi } from './teeth';
+import { ConditionLayer, type ConditionMap, type EvidenceKind } from './conditions';
 
 export type ArchView = 'both' | 'upper' | 'lower';
 export type Preset = 'default' | 'front' | 'right' | 'left' | 'upper' | 'lower';
@@ -47,6 +48,8 @@ interface Tooth {
 }
 
 interface Uniforms {
+  uEvidence: { value: number };
+  uEvidenceColor: { value: THREE.Color };
   uHighlight: { value: number };
   uHighlightColor: { value: THREE.Color };
   uRim: { value: number };
@@ -97,6 +100,8 @@ export class DentitionScene {
   private raycaster = new THREE.Raycaster();
   private disposed = false;
   private topInset = 0;
+  private conditionLayer = new ConditionLayer();
+  private framing: { preset: Preset } | { tooth: Fdi } | null = null;
 
   constructor(private host: HTMLElement, private callbacks: SceneCallbacks = {}) {
     this.reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -153,6 +158,9 @@ export class DentitionScene {
     // Widths in CSS pixels.
     this.outlineMaterials = { hover: outlineMaterial(HOVER_OUTLINE, 2.0, 0.6), select: outlineMaterial(ACCENT, 3.5, 1.0) };
 
+    // OrbitControls must start with a nonzero eye-to-target vector, including when
+    // a cached model finishes loading before the first animation frame.
+    this.camera.position.set(0, 0.02, 0.2);
     this.controls = new OrbitControls(this.camera, this.canvas);
     this.controls.enableDamping = !this.reducedMotion;
     this.controls.dampingFactor = 0.09;
@@ -169,6 +177,7 @@ export class DentitionScene {
     });
     this.controls.addEventListener('start', () => {
       this.tween = null;
+      this.framing = null;
       this.callbacks.onCameraStart?.();
     });
 
@@ -287,6 +296,7 @@ export class DentitionScene {
         });
       }
       t.outlines.forEach((o, i) => {
+        o.geometry = t.meshes[i].geometry;
         o.visible = !!kind && t.meshes[i].visible;
         if (kind) o.material = this.outlineMaterials[kind];
       });
@@ -326,6 +336,7 @@ export class DentitionScene {
   setRoots(on: boolean): void {
     this.roots = on;
     for (const t of this.teeth.values()) t.root.visible = on;
+    this.conditionLayer.setAnatomy(on);
     for (const m of this.gumMaterials) {
       m.transparent = on;
       m.opacity = on ? 0.14 : 1;
@@ -337,6 +348,27 @@ export class DentitionScene {
       g.renderOrder = on ? 2 : 0;
     }
     this.refreshHighlights();
+  }
+
+  setConditions(map: ConditionMap): void {
+    this.conditionLayer.update(this.teeth, map);
+    for (const t of this.teeth.values()) t.root.visible = this.roots;
+    this.conditionLayer.setAnatomy(this.roots);
+    this.refreshHighlights();
+    this.dirty = true;
+  }
+
+  /** A review annotation, independently of illustrative damage geometry. */
+  setEvidence(map: Partial<Record<Fdi, EvidenceKind>>): void {
+    for (const [fdi, tooth] of this.teeth) {
+      const kind = map[fdi];
+      const color = kind === 'manual' ? '#9b6bc4' : kind === 'uncertain' ? '#6097bc' : '#e1a03d';
+      for (const uniforms of tooth.uniforms) {
+        uniforms.uEvidence.value = kind ? 0.38 : 0;
+        uniforms.uEvidenceColor.value.set(color);
+      }
+    }
+    this.dirty = true;
   }
 
   setBiteOpen(open: boolean, animate = true): void {
@@ -359,6 +391,7 @@ export class DentitionScene {
 
   /** Move to a preset view. Occlusal presets look perpendicular to that arch's occlusal plane. */
   goTo(preset: Preset, animate = true): void {
+    this.framing = { preset };
     const [az, el] = PRESETS[preset];
     const dir = new THREE.Vector3(Math.sin(az * DEG) * Math.cos(el * DEG), Math.sin(el * DEG), Math.cos(az * DEG) * Math.cos(el * DEG));
     if (preset === 'upper' || preset === 'lower') dir.applyQuaternion(this.arches[preset].quaternion);
@@ -369,6 +402,7 @@ export class DentitionScene {
   focusTooth(fdi: Fdi, animate = true): void {
     const t = this.teeth.get(fdi);
     if (!t) return;
+    this.framing = { tooth: fdi };
     const m = this.arches[t.arch].matrixWorld;
     const tip = t.tip.clone().applyMatrix4(m);
     const cej = t.cej.clone().applyMatrix4(m);
@@ -396,6 +430,8 @@ export class DentitionScene {
   private flyTo(target: THREE.Vector3, dir: THREE.Vector3, distance: number, animate: boolean, ms = 650): void {
     const t0 = this.controls.target.clone();
     const off0 = this.camera.position.clone().sub(t0);
+    // A collapsed camera can otherwise stay at its target through every preset.
+    if (!Number.isFinite(off0.lengthSq()) || off0.lengthSq() < 1e-12) off0.set(0, 0, distance);
     const d0 = off0.length();
     const q = new THREE.Quaternion().setFromUnitVectors(off0.clone().normalize(), dir.clone().normalize());
     const id = new THREE.Quaternion();
@@ -434,10 +470,11 @@ export class DentitionScene {
 
   /** Camera distance at which a sphere fits the visible part of the canvas (below the toolbar inset). */
   private fitDistance(radius: number): number {
-    const h = this.host.clientHeight || 1;
-    const full = h + this.topInset;
+    const h = Math.max(1, this.host.clientHeight);
+    const inset = Math.min(Math.max(0, this.topInset), h * 0.35);
+    const full = h + inset;
     const tanFull = Math.tan((this.camera.fov * DEG) / 2);
-    const tanV = (tanFull * (h - this.topInset)) / full;
+    const tanV = (tanFull * (h - inset)) / full;
     const tanH = tanFull * this.camera.aspect;
     const half = Math.atan(Math.min(tanV, tanH));
     return THREE.MathUtils.clamp(radius / Math.sin(half), this.controls.minDistance, this.controls.maxDistance);
@@ -539,14 +576,21 @@ export class DentitionScene {
     const w = this.host.clientWidth;
     const h = this.host.clientHeight;
     if (!w || !h) return;
+    const inset = Math.min(Math.max(0, this.topInset), h * 0.35);
     this.renderer.setSize(w, h, false);
     // A taller virtual frame with the canvas at its top puts the optical centre `topInset / 2` lower
     // (the aspect is the virtual frame's, so pixels stay square).
-    this.camera.aspect = w / (h + this.topInset);
-    if (this.topInset > 0) this.camera.setViewOffset(w, h + this.topInset, 0, 0, w, h);
+    this.camera.aspect = w / (h + inset);
+    if (inset > 0) this.camera.setViewOffset(w, h + inset, 0, 0, w, h);
     else this.camera.clearViewOffset();
     this.camera.updateProjectionMatrix();
     for (const m of Object.values(this.outlineMaterials)) m.uniforms.uResolution.value.set(w, h);
+    // Panel/container changes can occur after a hidden tab has loaded. Refit the
+    // current subject; preserve a camera the user has manually orbited or panned.
+    if (this.teeth.size && this.framing) {
+      if ('preset' in this.framing) this.goTo(this.framing.preset, false);
+      else this.focusTooth(this.framing.tooth, false);
+    }
     this.dirty = true;
   }
 
@@ -573,6 +617,7 @@ export class DentitionScene {
   }
 
   dispose(): void {
+    this.conditionLayer.clear();
     this.disposed = true;
     cancelAnimationFrame(this.raf);
     this.resizeObserver.disconnect();
@@ -589,6 +634,8 @@ type Kind = 'enamel' | 'root' | 'gingiva';
  *  a soft rim term that stands in for light scattering through enamel and gingiva. */
 function toothMaterial(kind: Kind, low: boolean): { material: THREE.MeshPhysicalMaterial | THREE.MeshStandardMaterial; uniforms: Uniforms } {
   const uniforms: Uniforms = {
+    uEvidence: { value: 0 },
+    uEvidenceColor: { value: new THREE.Color('#e1a03d') },
     uHighlight: { value: 0 },
     uHighlightColor: { value: ACCENT.clone() },
     uRim: { value: kind === 'enamel' ? 0.16 : kind === 'gingiva' ? 0.12 : 0.05 },
@@ -617,9 +664,9 @@ function toothMaterial(kind: Kind, low: boolean): { material: THREE.MeshPhysical
   material.onBeforeCompile = (shader) => {
     Object.assign(shader.uniforms, uniforms);
     shader.fragmentShader =
-      'uniform float uHighlight;\nuniform vec3 uHighlightColor;\nuniform float uRim;\nuniform vec3 uRimColor;\n' +
+      'uniform float uEvidence;\nuniform vec3 uEvidenceColor;\nuniform float uHighlight;\nuniform vec3 uHighlightColor;\nuniform float uRim;\nuniform vec3 uRimColor;\n' +
       shader.fragmentShader
-        .replace('#include <color_fragment>', '#include <color_fragment>\n\tdiffuseColor.rgb = mix( diffuseColor.rgb, uHighlightColor, uHighlight );')
+        .replace('#include <color_fragment>', '#include <color_fragment>\n\tdiffuseColor.rgb = mix(diffuseColor.rgb, uEvidenceColor, uEvidence);\n\tdiffuseColor.rgb = mix( diffuseColor.rgb, uHighlightColor, uHighlight );')
         .replace(
           '#include <emissivemap_fragment>',
           '#include <emissivemap_fragment>\n\tfloat dmRim = pow( 1.0 - saturate( dot( normal, normalize( vViewPosition ) ) ), 3.0 );\n\ttotalEmissiveRadiance += uRimColor * dmRim * uRim * diffuseColor.rgb + uHighlightColor * uHighlight * 0.22;',

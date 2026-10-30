@@ -44,7 +44,30 @@ Push to `main`; `.github/workflows/deploy.yml` builds and publishes to GitHub Pa
 `https://dentaldetect.github.io/dentalmind.github.io/`. If the repo is renamed to
 `dentaldetect.github.io` or a custom domain is added, set `base: '/'` in `astro.config.mjs`.
 
-## Backend features
+## X-ray atlas review and condition simulations
+
+Open `/atlas/?example=1` for the new viewer, linked from the home, product, demo
+and dentition pages. It includes finding tints/markers, uncertain states, manual
+condition examples, report import/export, camera fixes and explicit root anatomy
+mode. `npm run build` packages it into the Pages artifact automatically.
+
+GitHub Pages serves static files only. By default, this viewer works offline
+with manual scenarios and imported reports. Its built-in illustration is the
+existing AI-generated hero image, with explicitly manual simulation examples;
+it contains no patient images or detector predictions. No model weights, service
+tokens or private configuration are published.
+
+Automatic atlas analysis requires a separately hosted HTTPS backend. Set the
+repository Actions variable `ATLAS_API_BASE` to the full public atlas API prefix
+(for example `https://api.example.org/v1/atlas/`) to connect it at build time.
+That backend must provide suitable CORS and authenticated upload access; a
+browser bundle must never contain a shared inference-service secret. The
+existing `PUBLIC_API_BASE` is a separate website API and is preserved.
+
+Run `npm run test:atlas` for camera, condition, evidence and hosting checks.
+The Android implementation prompt is [here](docs/mobile-app-build-prompt.md).
+
+## Other backend features
 
 The demo-request form, footer newsletter sign-up, cookie-free view counts and live X-ray analysis on
 `/demo/` use the shared backend in `sites-api` (Cloudflare Worker). Build with

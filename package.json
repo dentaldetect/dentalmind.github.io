@@ -5,9 +5,11 @@
   "private": true,
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "build": "astro build && npm run build:atlas-match && node tools/atlas-match/package-public.mjs",
     "preview": "astro preview",
     "build:dentition-embed": "vite build --config tools/dentition/vite.embed.config.mjs",
+    "build:atlas-match": "vite build --config tools/atlas-match/vite.config.mjs",
+    "test:atlas": "node --test tools/dentition/camera.test.mjs tools/dentition/conditions.test.mjs tools/atlas-match/*.test.mjs",
     "model:dentition": "node tools/dentition/compress.mjs"
   },
   "dependencies": {
@@ -23,6 +25,7 @@
     "@gltf-transform/functions": "^4.5.1",
     "@types/qrcode": "^1.5.5",
     "@types/three": "^0.186.0",
+    "esbuild": "0.28.2",
     "meshoptimizer": "^1.3.0",
     "qrcode": "^1.5.4"
   }

@@ -1,0 +1,18 @@
+import { cp, mkdir, readFile, writeFile } from 'node:fs/promises';
+import { createHash } from 'node:crypto';
+import { fileURLToPath } from 'node:url';
+const repo=new URL('../../',import.meta.url);
+const at=path=>fileURLToPath(new URL(path,repo));
+const output=at('dist/atlas/');
+await mkdir(output,{recursive:true});
+await cp(at('dist-atlas-match/'),output,{recursive:true});
+const metadata=JSON.parse(await readFile(at('public/models/dentition/teeth.json'),'utf8'));
+if(metadata.teeth.length!==32)throw Error('Atlas must include 32 permanent teeth');
+const sha=createHash('sha256').update(await readFile(at('public/models/dentition/dentition.glb'))).digest('hex');
+const catalog={version:'bodyparts3d-dentalmind-v1',model_sha256:sha,model_url:'../models/dentition/dentition.glb',license_url:'../models/dentition/LICENSE.md',geometry_scope:'canonical atlas; not patient-specific anatomy',teeth:metadata.teeth,research_example_available:true,mode:'static',automatic_detection_available:false};
+await writeFile(at('dist/atlas/catalog.json'),JSON.stringify(catalog,null,2));
+const png=await readFile(at('public/brand/dental-panorama-synthetic.png'));
+if(png.readUInt32BE(0)!==0x89504e47)throw Error('Expected the existing synthetic PNG illustration');
+const report={schema_version:'atlas-match-1.0',modality:'panoramic',image_size:[png.readUInt32BE(16),png.readUInt32BE(20)],atlas:{model_sha256:sha,version:catalog.version},patient_specific_3d:false,mappings:[],findings:[],findings_analysis:{available:false,unassigned_count:0,note:'Static illustration; no automatic model predictions.'},visualization_scenario:{version:1,patient_specific_3d:false,manual_conditions:{'16':[{kind:'caries',origin:'manual'}],'21':[{kind:'fracture',origin:'manual'}],'36':[{kind:'restoration',origin:'manual'}],'46':[{kind:'root_canal',origin:'manual'}]}},demo:{source:'Existing AI-generated homepage illustration',purpose:'Manual visualization examples only; no patient data or measured disease geometry'}};
+await writeFile(at('dist/atlas/example-report.json'),JSON.stringify(report,null,2));
+console.log('Packaged /atlas/ with existing licensed anatomy and a synthetic manual example.');

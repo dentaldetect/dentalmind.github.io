@@ -4,3 +4,4 @@ dist/
 .DS_Store
 tools/dentition/build/
 dist-embed/
+dist-atlas-match/

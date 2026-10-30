@@ -6,11 +6,14 @@
 import type { Dict } from '../i18n/en';
 import type { ArchView, DentitionScene, Preset } from './scene';
 import { BY_FDI, CHART, TEETH, isFdi, neighbour, toothNumber, type Fdi, type Numbering, type ToothInfo } from './teeth';
+import type { ConditionMap, EvidenceKind } from './conditions';
 
 export type Strings = Dict['dentition'];
 
 /** Clinical status of a tooth, e.g. from a contract-v1 analysis. Kept apart from the anatomy. */
 export interface ToothStatus {
+  summary?: string;
+  evidence?: { kind: EvidenceKind; label: string };
   level: 'info' | 'watch' | 'act';
   /** Short text, already translated, e.g. "Deep caries (awaiting dentist review)". */
   items: string[];
@@ -33,6 +36,7 @@ export interface DentitionHandle {
   select(fdi: Fdi | null, focus?: boolean): void;
   setStatus(status: Partial<Record<Fdi, ToothStatus>>): void;
   setNumbering(numbering: Numbering): void;
+  setConditions(map: ConditionMap): void;
   readonly selected: Fdi | null;
   readonly scene: DentitionScene | null;
   /** Resolves when the model is shown, rejects if it cannot be (no WebGL, load error). */
@@ -116,13 +120,15 @@ export function mountDentition(root: HTMLElement, opts: DentitionOptions): Denti
   const hoverLabel = h('div', { class: 'dm3d-label dm3d-label-hover', hidden: true });
   const selectLabel = h('div', { class: 'dm3d-label dm3d-label-selected', hidden: true });
   const leader = h('div', { class: 'dm3d-leader', hidden: true });
+  const evidenceMarkers = new Map<Fdi, HTMLButtonElement>();
+  const evidenceLayer = h('div', { class: 'dm3d-evidence-layer' });
   const hoverLeader = h('div', { class: 'dm3d-leader dm3d-leader-hover', hidden: true });
   labels.append(hoverLeader, leader, hoverLabel, selectLabel);
   const orientR = h('span', { class: 'dm3d-orient', 'data-side': 'right' }, s.patientRight);
   const orientL = h('span', { class: 'dm3d-orient', 'data-side': 'left' }, s.patientLeft);
   const orientSide = h('span', { class: 'dm3d-orient dm3d-orient-facing', hidden: true });
   const orient = h('div', { class: 'dm3d-orients', 'aria-hidden': 'true' }, orientR, orientL, orientSide);
-  viewport.append(labels, orient);
+  viewport.append(labels, orient, evidenceLayer);
 
   // Toolbar: reset, the five presets, then (wide screens) arches and roots, then the display menu.
   const tipBtn = (cls: string, label: string, icon: SVGSVGElement, extra: Record<string, string> = {}) =>
@@ -274,7 +280,24 @@ export function mountDentition(root: HTMLElement, opts: DentitionOptions): Denti
         btn(s.clear, ICONS.close, () => select(null, 'chart'), 'dm3d-action-clear'),
       ),
     );
-    fill(sheetSummary, h('b', {}, num(t.fdi)), ` · ${name(t)}`);
+    fill(sheetSummary, h('b', {}, num(t.fdi)), ` · ${name(t)}`, st?.evidence ? h('span', { class: 'dm3d-evidence-summary', 'data-evidence': st.evidence.kind }, st.evidence.label) : st?.summary ? h('span', { class: 'dm3d-evidence-summary', 'data-evidence': 'unassessed' }, st.summary) : null);
+  }
+
+  function renderEvidence(): void {
+    evidenceLayer.replaceChildren(); evidenceMarkers.clear();
+    const tint: Partial<Record<Fdi, EvidenceKind>> = {};
+    for (const [key, st] of Object.entries(status)) {
+      if (!isFdi(key) || !st?.evidence) continue;
+      const evidence = st.evidence;
+      tint[key] = evidence.kind;
+      const label = `${s.tooth} ${num(key)} · ${evidence.label}`;
+      const marker = h('button', { type: 'button', class: 'dm3d-evidence-marker', 'data-evidence': evidence.kind,
+        'aria-label': label, title: label }, `${num(key)} ${evidence.kind === 'uncertain' ? '?' : evidence.kind === 'manual' ? 'S' : '!'}`);
+      marker.onclick = () => { select(key, 'chart'); scene?.focusTooth(key); };
+      evidenceMarkers.set(key, marker); evidenceLayer.append(marker);
+    }
+    scene?.setEvidence(tint);
+    renderLabels();
   }
 
   function renderLabels(): void {
@@ -284,6 +307,11 @@ export function mountDentition(root: HTMLElement, opts: DentitionOptions): Denti
     const top = 92; // below the toolbar and the orientation badges
     const bottom = hgt - 44; // above the hint and the credit
     const bounds = scene.screenBounds();
+    for (const [fdi, marker] of evidenceMarkers) {
+      const a = scene.anchor(fdi), p = scene.crownPoint(fdi, 0.35);
+      marker.hidden = !a?.onScreen || !p;
+      if (!marker.hidden && p) marker.style.transform = `translate(${Math.round(Math.max(4, Math.min(w - 58, p.x + 10)))}px, ${Math.round(Math.max(62, Math.min(hgt - 50, p.y - 12)))}px)`;
+    }
     // Labels go in the margin around the model, joined to the tooth by a leader line, so they never sit on
     // the teeth. When the model fills the view there is no margin: then beside the crown, away from it.
     const place = (el: HTMLElement, line: HTMLElement, fdi: Fdi | null) => {
@@ -683,6 +711,7 @@ export function mountDentition(root: HTMLElement, opts: DentitionOptions): Denti
       const accent = getComputedStyle(root).getPropertyValue('--dm-accent-strong').trim();
       if (/^#[0-9a-f]{3,8}$/i.test(accent)) scene!.setAccent(accent);
       scene!.setSelected(selected);
+      renderEvidence();
       updateLabelsContent();
     };
     await load();
@@ -698,8 +727,10 @@ export function mountDentition(root: HTMLElement, opts: DentitionOptions): Denti
       status = { ...map };
       renderChart();
       renderDetail();
+      renderEvidence();
     },
     setNumbering,
+    setConditions: map => { void ready.then(() => scene?.setConditions(map)); },
     get selected() {
       return selected;
     },

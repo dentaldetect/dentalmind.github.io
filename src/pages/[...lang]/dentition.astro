@@ -13,6 +13,7 @@ const rows = [...TEETH].sort((a, b) => a.universal - b.universal);
 <Page lang={lang} title={d.title} subtitle={d.subtitle} eyebrow={d.eyebrow} active="dentition">
   <section class="section viewer-section">
     <div class="wrap">
+      <p><a class="btn btn-primary" href={asset('/atlas/?example=1')}>{lang === 'fa' ? 'باز کردن تطبیق تصویر و شبیه‌سازی مشکلات دندان' : 'Open X-ray atlas review & condition simulations'}</a></p>
       <DentitionViewer lang={lang} licenseHref="#about-model" />
     </div>
   </section>

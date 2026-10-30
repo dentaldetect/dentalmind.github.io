@@ -24,10 +24,12 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - run: npm run test:atlas
       - run: npm run build
         env:
           # Repository variable (Settings → Secrets and variables → Actions → Variables). Empty = static fallbacks.
           PUBLIC_API_BASE: ${{ vars.PUBLIC_API_BASE }}
+          VITE_ATLAS_API_BASE: ${{ vars.ATLAS_API_BASE }}
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist

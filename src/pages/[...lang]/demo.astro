@@ -19,6 +19,7 @@ const l = (en: string, fa: string) => lang === "fa" ? fa : en;
       <div class="crumb"><a href={lp(lang, '/')}>DentalMind</a><span>/</span><span>{l('ANALYSIS WORKSPACE','فضای بررسی تصویر')}</span></div>
       <div class="heading-row"><div><h1>{l('A clearer view of every tooth.','نمایی روشن‌تر از هر دندان.')}</h1><p>{l('Bring in a radiograph, explore the findings, and keep the next step in perspective.','تصویر رادیوگرافی را انتخاب کنید، یافته‌ها را ببینید و گام بعدی را با آگاهی بیشتری بررسی کنید.')}</p></div><span class="research-badge">{l('Research prototype','نمونه پژوهشی')}</span></div>
       <ol class="workflow"><li><b>01</b>{l('Select an image','انتخاب تصویر')}</li><li><b>02</b>{l('Explore findings','بررسی یافته‌ها')}</li><li><b>03</b>{l('Clinical review','بازبینی بالینی')}</li></ol>
+      <p><a class="btn btn-secondary" href={asset('/atlas/?example=1')}>{l('Open 3D atlas & condition simulations','باز کردن اطلس سه‌بعدی و شبیه‌سازی مشکلات')}</a></p>
     </div>
     <div
       class="wrap demo"
